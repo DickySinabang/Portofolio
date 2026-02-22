@@ -1,0 +1,370 @@
+/* Variabel Warna Sesuai Gambar */
+:root {
+    --bg-dark: #0f111a;
+    --bg-accent: #1a1e2e;
+    --text-blue: #a3b9ff;
+    --btn-gray: #1e2230;
+}
+
+body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background-color: var(--bg-dark);
+    overflow-x: hidden;
+}
+
+/* Latar Belakang Gradasi Radial (Efek Cahaya di belakang) */
+.bg-main {
+    background: radial-gradient(circle at 30% 30%, #1c233a 0%, #0f111a 60%);
+    background-attachment: fixed;
+}
+
+/* Navbar Style */
+.logo-box {
+    background: #1e2230;
+    padding: 5px 8px;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.btn-resume {
+    background: #1e2230;
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Hero Content */
+.hero-section {
+    padding: 80px 0;
+}
+
+.hero-title {
+    font-size: clamp(3rem, 8vw, 5rem);
+    line-height: 1.1;
+    letter-spacing: -2px;
+}
+
+/* Gradasi Nama "Sinabang" */
+.text-gradient {
+    background: linear-gradient(to right, #7d9cff, #c3d4ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.hero-desc {
+    color: #8e93a6;
+    max-width: 480px;
+    font-size: 1.1rem;
+    line-height: 1.6;
+}
+
+/* Badge Available */
+.badge-work {
+    display: inline-flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 8px 16px;
+    border-radius: 50px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #a0a0a0;
+}
+
+.dot-pulse {
+    height: 8px;
+    width: 8px;
+    background-color: #4ade80;
+    border-radius: 50%;
+    margin-right: 10px;
+    box-shadow: 0 0 10px #4ade80;
+}
+
+/* Tombol */
+.btn-white-custom {
+    background: white;
+    color: black;
+    font-weight: 600;
+    padding: 12px 28px;
+    border-radius: 10px;
+}
+
+.btn-outline-custom {
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 12px 28px;
+    border-radius: 10px;
+}
+
+/* Gambar & Card */
+.hero-img-wrapper {
+    position: relative;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.img-main {
+    width: 100%;
+    max-width: 500px;
+    border-radius: 24px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    filter: brightness(0.8);
+}
+
+.tech-card {
+    position: absolute;
+    bottom: -20px;
+    left: 20px;
+    background: rgba(26, 30, 46, 0.9);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    min-width: 250px;
+}
+
+.tech-icons {
+    display: flex;
+    gap: 10px;
+    font-size: 1.2rem;
+}
+
+.text-blue { color: #7d9cff; }
+
+.tech-label {
+    font-size: 10px;
+    color: #8e93a6;
+    letter-spacing: 1px;
+}
+
+.tech-value {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+
+
+/* About Section Styles */
+.py-100 {
+    padding: 100px 0;
+}
+
+.tracking-wider {
+    letter-spacing: 0.15em;
+    font-size: 0.85rem;
+}
+
+/* Gambar Profil dengan Border Halus */
+.about-img-wrapper img {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.about-img-wrapper img:hover {
+    transform: translateY(-10px);
+}
+
+/* Styling Statistik */
+.stat-item h3 {
+    font-size: 2.5rem;
+    letter-spacing: -1px;
+}
+
+.stat-item p {
+    color: #8e93a6 !important;
+    font-weight: 600;
+}
+
+/* Skill Card Styles */
+.skill-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+    transition: all 0.3s ease;
+}
+
+.skill-card:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: var(--text-blue);
+    transform: translateY(-5px);
+}
+
+.skill-icon-box {
+    width: 45px;
+    height: 45px;
+    background: rgba(125, 156, 255, 0.1);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+}
+
+/* Custom Progress Bar */
+.skill-name, .skill-percent {
+    font-size: 0.9rem;
+    color: #e0e0e0;
+    font-weight: 500;
+}
+
+.skill-percent {
+    color: #8e93a6;
+}
+
+.progress-custom {
+    height: 6px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(to right, #4a72ff, #7d9cff);
+    border-radius: 10px;
+    transition: width 1s ease-in-out;
+}
+
+/* Typography refinement */
+.tracking-wider {
+    letter-spacing: 2px;
+}
+
+/* Project Section Styles */
+.project-card {
+    background: #161a23; /* Warna card sedikit lebih terang dari BG utama */
+    border-radius: 24px;
+    overflow: hidden;
+    height: 100%;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: transform 0.3s ease, border-color 0.3s ease;
+}
+
+.project-card:hover {
+    transform: translateY(-10px);
+    border-color: rgba(125, 156, 255, 0.3);
+}
+
+.project-img-container {
+    width: 100%;
+    height: 240px;
+    overflow: hidden;
+    background: #1e2230; /* Fallback color */
+}
+
+.project-img-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.project-card:hover .project-img-container img {
+    transform: scale(1.1);
+}
+
+/* Badge Tech */
+.badge-tech {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--text-blue);
+    letter-spacing: 1px;
+    padding: 2px 0;
+}
+
+/* Link Style */
+.view-link {
+    color: white;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    transition: color 0.2s;
+}
+
+.view-link i {
+    font-size: 12px;
+    margin-left: 5px;
+}
+
+.view-link:hover {
+    color: var(--text-blue);
+}
+
+.hover-blue:hover {
+    color: var(--text-blue) !important;
+}
+
+/* Contact Section Styles */
+.contact-container {
+    background: #1a1e2e; /* Biru gelap sedikit lebih terang dari BG utama */
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.contact-icon {
+    width: 45px;
+    height: 45px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #a3b9ff;
+}
+
+.form-card {
+    background: rgba(15, 17, 26, 0.5); /* Gelap transparan */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.custom-input {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: white;
+    padding: 12px;
+}
+
+.custom-input:focus {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: var(--text-blue);
+    box-shadow: none;
+    color: white;
+}
+
+.custom-input::placeholder {
+    color: #4b5162;
+}
+
+/* Footer border kustom */
+.border-top {
+    border-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+/* Hover-blue (Utility) */
+.hover-blue:hover {
+    color: var(--text-blue) !important;
+}
+
+/* Responsive Adjusment */
+@media (max-width: 991px) {
+    .about-section {
+        padding: 60px 0;
+        text-align: center;
+    }
+    
+    .about-content .row {
+        justify-content: center;
+    }
+    
+    .stat-item {
+        margin-bottom: 30px;
+    }
+}
+
+/* Responsive */
+@media (max-width: 991px) {
+    .hero-img-wrapper { justify-content: center; }
+    .hero-title { font-size: 3.5rem; text-align: center; }
+    .hero-desc { text-align: center; margin: auto; }
+    .d-flex.flex-wrap { justify-content: center; }
+    .badge-work { margin: 0 auto 20px auto; display: flex; width: fit-content; }
+    .tech-card { left: 50%; transform: translateX(-50%); bottom: 10px; }
+}
