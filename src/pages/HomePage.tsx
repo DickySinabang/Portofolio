@@ -1,32 +1,30 @@
-import { Container } from '../components/ui/Container'
-import { navItems, profile } from '../data/portfolio'
+import { AboutSection } from '../components/sections/AboutSection'
+import { HeroSection } from '../components/sections/HeroSection'
+import { Section } from '../components/ui/Section'
+import { navItems } from '../data/portfolio'
+
+
+const builtSectionIds = ['home', 'about']
+const placeholderItems = navItems.filter(
+  (item) => !builtSectionIds.includes(item.sectionId),
+)
 
 export function HomePage() {
   return (
     <>
-      {navItems.map((item) => {
-        const isHome = item.sectionId === 'home'
-        const Heading = isHome ? 'h1' : 'h2'
-        const headingId = `${item.sectionId}-heading`
-
-        return (
-          <section
-            key={item.sectionId}
-            id={item.sectionId}
-            aria-labelledby={headingId}
-            className="flex min-h-[70vh] items-center border-b border-line"
-          >
-            <Container>
-              <Heading id={headingId} className="text-3xl font-semibold tracking-tight">
-                {isHome ? profile.name : item.label}
-              </Heading>
-              <p className="mt-3 text-muted">
-                {isHome ? profile.title : 'Placeholder section, built in Stage 5.'}
-              </p>
-            </Container>
-          </section>
-        )
-      })}
+      <HeroSection />
+      <AboutSection />
+      {placeholderItems.map((item) => (
+        <Section
+          key={item.sectionId}
+          id={item.sectionId}
+          eyebrow={item.label}
+          title={item.label}
+          className="min-h-[60vh]"
+        >
+          <p className="text-muted">Placeholder section, built in a later stage.</p>
+        </Section>
+      ))}
     </>
   )
 }

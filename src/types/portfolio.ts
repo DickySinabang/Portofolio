@@ -1,6 +1,6 @@
 export type NavItem = {
   label: string
-  /** The id of the matching <section> on the home page. */
+
   sectionId: string
 }
 
@@ -12,7 +12,7 @@ export type SiteConfig = {
 export type Profile = {
   name: string
   title: string
-  /** Contact fields are optional: anything left empty is simply not shown. */
+
   email?: string
   githubUrl?: string
   linkedinUrl?: string
@@ -24,4 +24,29 @@ export type SocialLink = {
   label: string
   href: string
   external: boolean
+}
+
+export type HeroContent = {
+
+  availability?: string
+  headline: string
+  intro: string
+}
+
+export type Education = {
+  degree: string
+  institution: string
+  status: string
+}
+
+export type AboutContent = {
+  paragraphs: string[]
+  education: Education
+  interests: string[]
+  approach: string[]
+
+  photo?: {
+    src: string
+    alt: string
+  }
 }
