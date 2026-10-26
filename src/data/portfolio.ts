@@ -15,6 +15,8 @@ import type {
 
 export const site: SiteConfig = {
   brand: 'DevPortfolio', // temporary brand name
+  description:
+    'Portfolio of an Information Technology graduate and aspiring full-stack web developer: projects, skills, and experience.',
   closingMessage: 'Thanks for stopping by.',
 }
 

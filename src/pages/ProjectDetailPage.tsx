@@ -5,7 +5,8 @@ import { ProjectLinks } from '../components/sections/ProjectLinks'
 import { Badge } from '../components/ui/Badge'
 import { BulletList } from '../components/ui/BulletList'
 import { Container } from '../components/ui/Container'
-import { projects } from '../data/portfolio'
+import { profile, projects, site } from '../data/portfolio'
+import { useDocumentMeta } from '../hooks/useDocumentMeta'
 import { findProjectBySlug, projectCategoryLabels } from '../lib/projects'
 
 function BackLink() {
@@ -32,6 +33,14 @@ function Block({ title, children }: { title: string; children: ReactNode }) {
 export function ProjectDetailPage() {
   const { slug } = useParams()
   const project = findProjectBySlug(projects, slug)
+
+  useDocumentMeta({
+    title: project
+      ? `${project.title} | ${profile.name}`
+      : `Project not found | ${site.brand}`,
+    description: project?.description ?? site.description,
+    noindex: !project,
+  })
 
   if (!project) {
     return (

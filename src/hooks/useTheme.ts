@@ -1,28 +1,37 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useSyncExternalStore } from 'react'
 
 export type Theme = 'light' | 'dark'
 
 const STORAGE_KEY = 'theme'
+const listeners = new Set<() => void>()
 
-// The inline script in index.html already set the class, so read it back.
-function getInitialTheme(): Theme {
+function subscribe(listener: () => void) {
+  listeners.add(listener)
+  return () => {
+    listeners.delete(listener)
+  }
+}
+
+// The class on <html> is the single source of truth (set early by index.html).
+function getTheme(): Theme {
   return document.documentElement.classList.contains('dark') ? 'dark' : 'light'
 }
 
-export function useTheme() {
-  const [theme, setTheme] = useState<Theme>(getInitialTheme)
+function applyTheme(theme: Theme) {
+  document.documentElement.classList.toggle('dark', theme === 'dark')
+  try {
+    localStorage.setItem(STORAGE_KEY, theme)
+  } catch {
+    // Storage can be blocked (private mode); the theme still works for this visit.
+  }
+  listeners.forEach((listener) => listener())
+}
 
-  useEffect(() => {
-    document.documentElement.classList.toggle('dark', theme === 'dark')
-    try {
-      localStorage.setItem(STORAGE_KEY, theme)
-    } catch {
-      // Storage can be blocked (private mode); the theme still works for this visit.
-    }
-  }, [theme])
+export function useTheme() {
+  const theme = useSyncExternalStore(subscribe, getTheme, (): Theme => 'dark')
 
   const toggleTheme = useCallback(() => {
-    setTheme((current) => (current === 'dark' ? 'light' : 'dark'))
+    applyTheme(getTheme() === 'dark' ? 'light' : 'dark')
   }, [])
 
   return { theme, toggleTheme }

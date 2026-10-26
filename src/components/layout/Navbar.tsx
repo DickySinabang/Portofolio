@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, useLocation } from 'react-router'
-import { Menu, X } from 'lucide-react'
+import { Menu, Search, X } from 'lucide-react'
 import { navItems, site } from '../../data/portfolio'
 import { useActiveSection } from '../../hooks/useActiveSection'
 import { getSectionPath } from '../../lib/navigation'
@@ -9,7 +9,11 @@ import { ThemeToggle } from '../ui/ThemeToggle'
 
 const sectionIds = navItems.map((item) => item.sectionId)
 
-export function Navbar() {
+type NavbarProps = {
+  onOpenPalette: () => void
+}
+
+export function Navbar({ onOpenPalette }: NavbarProps) {
   const [menuOpen, setMenuOpen] = useState(false)
   const menuButtonRef = useRef<HTMLButtonElement>(null)
   const { pathname } = useLocation()
@@ -64,6 +68,19 @@ export function Navbar() {
         </nav>
 
         <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={onOpenPalette}
+            aria-label="Open command palette"
+            aria-keyshortcuts="Control+K"
+            className="inline-flex h-10 items-center gap-2 rounded-lg border border-line bg-surface px-3 text-sm text-muted transition-colors hover:border-accent hover:text-foreground"
+          >
+            <Search aria-hidden="true" className="size-4" />
+            <span className="hidden lg:inline">Search</span>
+            <kbd className="hidden rounded border border-line px-1.5 font-mono text-xs lg:inline">
+              Ctrl K
+            </kbd>
+          </button>
           <ThemeToggle />
           <button
             ref={menuButtonRef}

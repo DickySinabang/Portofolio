@@ -6,6 +6,8 @@ export type NavItem = {
 
 export type SiteConfig = {
   brand: string
+  /** Used as the default meta description. Keep it under about 160 characters. */
+  description: string
   closingMessage: string
 }
 

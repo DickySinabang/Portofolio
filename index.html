@@ -2,12 +2,48 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>devportfolio</title>
+
+    <!-- TODO: update these when you have your real name. They are static on purpose,
+         because link-preview bots do not run JavaScript. -->
+    <title>DevPortfolio | Aspiring Full-Stack / Web Developer</title>
+    <meta
+      name="description"
+      content="Portfolio of an Information Technology graduate and aspiring full-stack web developer: projects, skills, and experience."
+    />
+    <meta name="theme-color" content="#0b1020" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="DevPortfolio" />
+    <meta
+      property="og:title"
+      content="DevPortfolio | Aspiring Full-Stack / Web Developer"
+    />
+    <meta
+      property="og:description"
+      content="Portfolio of an Information Technology graduate and aspiring full-stack web developer: projects, skills, and experience."
+    />
+    <meta name="twitter:card" content="summary" />
+    <!-- Added in Stage 11, once the public URL exists: og:url, og:image, canonical. -->
+
+    <script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme = stored || 'dark';
+          if (theme === 'dark') document.documentElement.classList.add('dark');
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
+    <noscript>
+      <p style="padding: 2rem; font-family: sans-serif">
+        This portfolio needs JavaScript to run. Please enable it in your browser.
+      </p>
+    </noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

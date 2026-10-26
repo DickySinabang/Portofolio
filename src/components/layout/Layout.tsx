@@ -1,10 +1,27 @@
+import { useEffect, useState } from 'react'
 import { Outlet } from 'react-router'
+import { CommandPalette } from '../ui/CommandPalette'
 import { ScrollProgress } from '../ui/ScrollProgress'
 import { Footer } from './Footer'
 import { Navbar } from './Navbar'
 import { ScrollToHash } from './ScrollToHash'
 
 export function Layout() {
+  const [paletteOpen, setPaletteOpen] = useState(false)
+
+  // Ctrl+K (or Cmd+K on Mac) toggles the command palette from anywhere.
+  useEffect(() => {
+    function handleKeyDown(event: KeyboardEvent) {
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
+        event.preventDefault()
+        setPaletteOpen((open) => !open)
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [])
+
   return (
     <div className="flex min-h-screen flex-col">
       <ScrollToHash />
@@ -15,11 +32,12 @@ export function Layout() {
       >
         Skip to content
       </a>
-      <Navbar />
+      <Navbar onOpenPalette={() => setPaletteOpen(true)} />
       <main id="main-content" tabIndex={-1} className="flex-1 focus:outline-none">
         <Outlet />
       </main>
       <Footer />
+      <CommandPalette open={paletteOpen} onClose={() => setPaletteOpen(false)} />
     </div>
   )
 }
