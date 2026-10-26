@@ -3,7 +3,6 @@
 /* Dark mode is controlled by a "dark" class on <html>, not the OS setting. */
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* Raw theme values. Light is the default; .dark overrides them. */
 :root {
   color-scheme: light;
   --bg: #f8fafc;
@@ -12,6 +11,7 @@
   --surface: #ffffff;
   --line: #e2e8f0;
   --accent: #4f46e5;
+  --accent-2: #0e7490;
   --accent-fg: #ffffff;
 }
 
@@ -23,10 +23,10 @@
   --surface: #11172a;
   --line: #232b45;
   --accent: #818cf8;
+  --accent-2: #22d3ee;
   --accent-fg: #0b1020;
 }
 
-/* Expose the values as Tailwind utilities: bg-background, text-muted, border-line... */
 @theme inline {
   --color-background: var(--bg);
   --color-foreground: var(--fg);
@@ -34,6 +34,7 @@
   --color-surface: var(--surface);
   --color-line: var(--line);
   --color-accent: var(--accent);
+  --color-accent-2: var(--accent-2);
   --color-accent-fg: var(--accent-fg);
 
   --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
@@ -42,7 +43,7 @@
 
 @layer base {
   html {
-    scroll-padding-top: 5rem; /* keeps anchored sections clear of the sticky navbar */
+    scroll-padding-top: 5rem;
   }
 
   @media (prefers-reduced-motion: no-preference) {
@@ -58,18 +59,72 @@
     -webkit-font-smoothing: antialiased;
   }
 
-  /* One consistent, always-visible keyboard focus style. */
   :focus-visible {
     outline: 2px solid var(--accent);
     outline-offset: 2px;
   }
 
+  /* Visitors who ask for less motion get (almost) none. */
   @media (prefers-reduced-motion: reduce) {
     *,
     ::before,
     ::after {
       animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
       transition-duration: 0.01ms !important;
     }
   }
+}
+
+/* ---------- Futuristic effects ---------- */
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(0, -28px, 0);
+  }
+}
+
+.animate-fade-up {
+  animation: fade-up 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+.animate-float {
+  animation: float 14s ease-in-out infinite;
+}
+
+/* Gradient headline text. Large text only, so contrast stays readable. */
+.text-gradient {
+  background-image: linear-gradient(
+    100deg,
+    var(--fg) 0%,
+    var(--accent) 55%,
+    var(--accent-2) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Faint technical grid that fades out toward the edges. */
+.bg-grid {
+  background-image:
+    linear-gradient(to right, color-mix(in srgb, var(--line) 80%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in srgb, var(--line) 80%, transparent) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(ellipse at center, #000 30%, transparent 75%);
 }

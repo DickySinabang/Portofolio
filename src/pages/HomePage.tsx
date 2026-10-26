@@ -1,10 +1,15 @@
 import { AboutSection } from '../components/sections/AboutSection'
+import { ContactSection } from '../components/sections/ContactSection'
+import { ExperienceSection } from '../components/sections/ExperienceSection'
 import { HeroSection } from '../components/sections/HeroSection'
+import { HighlightsSection } from '../components/sections/HighlightsSection'
+import { ProjectsSection } from '../components/sections/ProjectsSection'
+import { SkillsSection } from '../components/sections/SkillsSection'
 import { Section } from '../components/ui/Section'
 import { navItems } from '../data/portfolio'
 
-
-const builtSectionIds = ['home', 'about']
+// Sections that are already built. Everything else is still a placeholder.
+const builtSectionIds = ['home', 'about', 'skills', 'experience', 'projects']
 const placeholderItems = navItems.filter(
   (item) => !builtSectionIds.includes(item.sectionId),
 )
@@ -14,6 +19,11 @@ export function HomePage() {
     <>
       <HeroSection />
       <AboutSection />
+      <SkillsSection />
+      <ExperienceSection />
+      <HighlightsSection />
+      <ProjectsSection />
+      <ContactSection />
       {placeholderItems.map((item) => (
         <Section
           key={item.sectionId}

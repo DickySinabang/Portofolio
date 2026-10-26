@@ -23,3 +23,8 @@ export function getSocialLinks(profile: Profile): SocialLink[] {
 
   return links
 }
+
+/** True if there is at least one public way to contact you (link or CV). */
+export function hasContactDetails(profile: Profile): boolean {
+  return getSocialLinks(profile).length > 0 || clean(profile.cvUrl) !== ''
+}
