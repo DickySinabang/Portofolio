@@ -28,7 +28,7 @@ export function HighlightsSection() {
                 >
                   {item.urlLabel ?? 'Learn more'}
                   <ArrowUpRight aria-hidden="true" className="size-4" />
-                  <span className="sr-only"> for {item.title} (opens in a new tab)</span>
+                  <span className="sr-only">, {item.title} (opens in a new tab)</span>
                 </a>
               )}
             </li>

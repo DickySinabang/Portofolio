@@ -1,6 +1,9 @@
 import type { ReactNode } from 'react'
+import { navItems } from '../../data/portfolio'
+import { getSectionNumber } from '../../lib/navigation'
 import { Container } from './Container'
 import { Reveal } from './Reveal'
+import { SectionMarker } from './SectionMarker'
 
 type SectionProps = {
   id: string
@@ -8,38 +11,50 @@ type SectionProps = {
   title: string
   children: ReactNode
   className?: string
+  /** "raised" gives a section a slightly lighter surface, to vary the rhythm of the page. */
+  tone?: 'base' | 'raised'
 }
 
-/** Shared wrapper: consistent spacing, heading, reveal animation, and landmark label. */
-export function Section({ id, eyebrow, title, children, className = '' }: SectionProps) {
+const tones = {
+  base: '',
+  raised: 'bg-surface/40',
+}
+
+/**
+ * Shared wrapper for every section: one header style (a numbered marker that
+ * matches the navbar, a large title, and a rule), consistent spacing, a reveal
+ * animation, and the landmark label.
+ */
+export function Section({
+  id,
+  eyebrow,
+  title,
+  children,
+  className = '',
+  tone = 'base',
+}: SectionProps) {
   const headingId = `${id}-heading`
 
   return (
     <section
       id={id}
       aria-labelledby={headingId}
-      className={`border-b border-line py-20 sm:py-24 ${className}`}
+      className={`border-b border-line py-20 sm:py-28 ${tones[tone]} ${className}`}
     >
-      <Container>
+      <Container size="wide">
         <Reveal>
-          <p className="font-mono text-sm text-accent">
-            <span aria-hidden="true" className="text-accent-2">
-              {'// '}
-            </span>
-            {eyebrow}
-          </p>
-          <h2
-            id={headingId}
-            className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl"
-          >
+          <div className="flex items-center gap-4">
+            <SectionMarker index={getSectionNumber(navItems, id)} label={eyebrow} />
+            <span
+              aria-hidden="true"
+              className="h-px flex-1 bg-linear-to-r from-accent/40 via-line to-transparent"
+            />
+          </div>
+          <h2 id={headingId} className="text-headline mt-6 max-w-4xl text-balance">
             {title}
           </h2>
-          <div
-            aria-hidden="true"
-            className="mt-5 h-px w-20 bg-linear-to-r from-accent to-accent-2"
-          />
         </Reveal>
-        <Reveal delay={120} className="mt-10">
+        <Reveal delay={120} className="mt-12">
           {children}
         </Reveal>
       </Container>

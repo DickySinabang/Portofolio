@@ -1,85 +1,55 @@
-import { GraduationCap, Lightbulb } from 'lucide-react'
-import { about } from '../../data/portfolio'
-import { Badge } from '../ui/Badge'
+import { Compass, Lightbulb } from 'lucide-react'
+import { about, experience, profile } from '../../data/portfolio'
+import { buildPath } from '../../lib/about'
+import { Reveal } from '../ui/Reveal'
 import { Section } from '../ui/Section'
+import { AboutPath } from './about/AboutPath'
+import { ListPanel } from './about/ListPanel'
+import { ProfilePanel } from './about/ProfilePanel'
 
 export function AboutSection() {
-  const { paragraphs, education, interests, approach, photo } = about
+  const { paragraphs, interests, approach } = about
+  const [lead, ...rest] = paragraphs
+  const path = buildPath({ about, experience, profile })
+  const hasLists = interests.length > 0 || approach.length > 0
 
   return (
-    <Section id="about" eyebrow="About" title="A little about me">
-      <div className="grid gap-12 lg:grid-cols-[1.2fr_0.8fr]">
-        <div>
-          <div className="space-y-5 text-base leading-relaxed text-muted sm:text-lg">
-            {paragraphs.map((paragraph) => (
-              <p key={paragraph}>{paragraph}</p>
-            ))}
-          </div>
-
-          {approach.length > 0 && (
-            <div className="mt-10">
-              <h3 className="flex items-center gap-2 text-lg font-medium">
-                <Lightbulb aria-hidden="true" className="size-5 text-accent" />
-                How I approach learning
-              </h3>
-              <ul className="mt-4 space-y-3 text-muted">
-                {approach.map((item) => (
-                  <li key={item} className="flex gap-3">
-                    <span
-                      aria-hidden="true"
-                      className="mt-2.5 size-1.5 shrink-0 rounded-full bg-accent"
-                    />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
+    <Section id="about" eyebrow="About" title="A little about me" tone="raised">
+      {/* Story on the left, identity panel on the right; both stretch to the same height. */}
+      <div className="grid gap-10 lg:grid-cols-12 lg:items-stretch">
+        <div className="flex flex-col justify-center gap-6 lg:col-span-7">
+          {lead && (
+            <p className="font-display text-2xl leading-snug text-balance sm:text-3xl">{lead}</p>
           )}
+          {rest.map((paragraph) => (
+            <p key={paragraph} className="text-base leading-relaxed text-muted sm:text-lg">
+              {paragraph}
+            </p>
+          ))}
         </div>
 
-        <div className="space-y-6">
-          {photo && (
-            <img
-              src={photo.src}
-              alt={photo.alt}
-              loading="lazy"
-              className="aspect-square w-full max-w-sm rounded-lg border border-line object-cover"
+        <Reveal variant="left" delay={100} className="flex flex-col lg:col-span-5">
+          <ProfilePanel className="flex-1" />
+        </Reveal>
+      </div>
+
+      <AboutPath nodes={path} className="mt-16" />
+
+      {hasLists && (
+        <div className="mt-16 grid gap-6 lg:grid-cols-2">
+          {interests.length > 0 && (
+            <ListPanel title="Interests" icon={Compass} items={interests} />
+          )}
+          {approach.length > 0 && (
+            <ListPanel
+              title="How I approach learning"
+              icon={Lightbulb}
+              items={approach}
+              ordered
             />
           )}
-
-          <div className="rounded-lg border border-line bg-surface p-6">
-            <h3 className="flex items-center gap-2 text-lg font-medium">
-              <GraduationCap aria-hidden="true" className="size-5 text-accent" />
-              Education
-            </h3>
-            <dl className="mt-4 space-y-3 text-sm">
-              <div>
-                <dt className="text-muted">Degree</dt>
-                <dd className="font-medium">{education.degree}</dd>
-              </div>
-              <div>
-                <dt className="text-muted">Institution</dt>
-                <dd className="font-medium">{education.institution}</dd>
-              </div>
-              <div>
-                <dt className="text-muted">Status</dt>
-                <dd className="font-medium">{education.status}</dd>
-              </div>
-            </dl>
-          </div>
-
-          <div className="rounded-lg border border-line bg-surface p-6">
-            <h3 className="text-lg font-medium">Interests</h3>
-            <ul className="mt-4 flex flex-wrap gap-2">
-              {interests.map((interest) => (
-                <li key={interest}>
-                  <Badge>{interest}</Badge>
-                </li>
-              ))}
-            </ul>
-          </div>
         </div>
-      </div>
+      )}
     </Section>
   )
 }

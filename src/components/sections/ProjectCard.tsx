@@ -36,7 +36,7 @@ export function ProjectCard({ project }: { project: Project }) {
           >
             View Details
             <ArrowRight aria-hidden="true" className="size-4" />
-            <span className="sr-only"> of {project.title}</span>
+            <span className="sr-only">, {project.title}</span>
           </Link>
           <ProjectLinks project={project} />
         </div>

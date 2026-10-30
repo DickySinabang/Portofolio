@@ -1,49 +1,39 @@
 import { about, profile } from '../../data/portfolio'
 
-function CodeValue({ value }: { value: string | string[] }) {
-  if (typeof value === 'string') {
-    return <span className="text-accent">{JSON.stringify(value)},</span>
-  }
-
-  return (
-    <>
-      <span>[</span>
-      {value.map((item) => (
-        <span key={item} className="block pl-4 text-accent">
-          {JSON.stringify(item)},
-        </span>
-      ))}
-      <span>],</span>
-    </>
-  )
+type HeroCodeCardProps = {
+  className?: string
 }
 
-
-export function HeroCodeCard() {
-  const developer: Record<string, string | string[]> = {
-    name: profile.name,
-    role: profile.title,
-    education: `${about.education.degree}, ${about.education.institution}`,
-    interests: about.interests,
-  }
+/**
+ * A compact "readout" card that overlaps the 3D artifact. It only shows facts
+ * that are already in portfolio.ts, wraps instead of clipping, and is hidden
+ * from assistive technology because the same facts are in the page text.
+ */
+export function HeroCodeCard({ className = '' }: HeroCodeCardProps) {
+  const rows: [string, string][] = [
+    ['name', profile.name],
+    ['role', profile.title],
+    ['school', about.education.institution],
+  ]
 
   return (
     <div
       aria-hidden="true"
-      className="min-w-0 overflow-hidden rounded-lg border border-line bg-surface"
+      className={`overflow-hidden rounded-lg border border-line bg-surface/80 shadow-[0_0_60px_-28px_var(--accent)] backdrop-blur ${className}`}
     >
-      <div className="flex items-center gap-2 border-b border-line px-4 py-3">
-        <span className="size-2.5 rounded-full bg-line" />
-        <span className="size-2.5 rounded-full bg-line" />
-        <span className="size-2.5 rounded-full bg-line" />
-        <span className="ml-2 font-mono text-xs text-muted">developer.ts</span>
+      <div className="flex items-center gap-2 border-b border-line px-3 py-2">
+        <span className="size-2 rounded-full bg-line" />
+        <span className="size-2 rounded-full bg-line" />
+        <span className="size-2 rounded-full bg-line" />
+        <span className="ml-1 font-mono text-[11px] text-muted">developer.ts</span>
       </div>
-      <pre className="overflow-x-auto p-5 font-mono text-[13px] leading-7 text-muted">
+      <pre className="p-4 font-mono text-xs leading-6 break-words whitespace-pre-wrap text-muted">
         <code>
-          <span className="text-accent">const</span> developer = {'{'}
-          {Object.entries(developer).map(([key, value]) => (
+          <span className="text-accent-2">const</span> developer = {'{'}
+          {rows.map(([key, value]) => (
             <span key={key} className="block pl-4">
-              <span className="text-foreground">{key}</span>: <CodeValue value={value} />
+              <span className="text-foreground">{key}</span>:{' '}
+              <span className="text-accent">{JSON.stringify(value)}</span>,
             </span>
           ))}
           {'}'}

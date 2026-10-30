@@ -18,10 +18,7 @@ function ExternalLink({ href, label, projectTitle }: ExternalLinkProps) {
     >
       {label}
       <ArrowUpRight aria-hidden="true" className="size-4" />
-      <span className="sr-only">
-        {' '}
-        for {projectTitle} (opens in a new tab)
-      </span>
+      <span className="sr-only">, {projectTitle} (opens in a new tab)</span>
     </a>
   )
 }

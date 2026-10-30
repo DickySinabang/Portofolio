@@ -3,28 +3,39 @@
 /* Dark mode is controlled by a "dark" class on <html>, not the OS setting. */
 @custom-variant dark (&:where(.dark, .dark *));
 
+/*
+ * DESIGN TOKENS ("Night Blueprint")
+ * Light is the default; .dark overrides it. Components never use raw colors,
+ * only the utilities generated below (bg-background, text-muted, border-line...).
+ *
+ * Colors are plain #rrggbb hex on purpose: ParticleField reads --accent and
+ * parses it. Every text pair was checked against WCAG AA (4.5:1); the lowest
+ * text ratio is the light-theme lime at 4.61:1.
+ */
 :root {
   color-scheme: light;
-  --bg: #f8fafc;
-  --fg: #0f172a;
-  --muted: #475569;
+  --bg: #f3f6fb;
+  --fg: #0a1020;
+  --muted: #4a5675;
   --surface: #ffffff;
-  --line: #e2e8f0;
-  --accent: #4f46e5;
-  --accent-2: #0e7490;
-  --accent-fg: #ffffff;
+  --line: #d5dcea;
+  --accent: #0e7490; /* cyan, the primary accent */
+  --accent-2: #5b4bd6; /* violet, the secondary accent */
+  --accent-3: #4d7c0f; /* lime, used sparingly for live/status details */
+  --accent-fg: #ffffff; /* text on top of --accent */
 }
 
 .dark {
   color-scheme: dark;
-  --bg: #0b1020;
-  --fg: #e6e9f2;
-  --muted: #9aa4bd;
-  --surface: #11172a;
-  --line: #232b45;
-  --accent: #818cf8;
-  --accent-2: #22d3ee;
-  --accent-fg: #0b1020;
+  --bg: #05070d;
+  --fg: #e8ecf8;
+  --muted: #9aa5c4;
+  --surface: #0a0f1c;
+  --line: #1b2338;
+  --accent: #22d3ee;
+  --accent-2: #9b8cff;
+  --accent-3: #c6f432;
+  --accent-fg: #04121a;
 }
 
 @theme inline {
@@ -35,10 +46,14 @@
   --color-line: var(--line);
   --color-accent: var(--accent);
   --color-accent-2: var(--accent-2);
+  --color-accent-3: var(--accent-3);
   --color-accent-fg: var(--accent-fg);
 
   --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: ui-monospace, "Cascadia Code", "Consolas", monospace;
+  --font-display: "Space Grotesk Variable", "Inter Variable", ui-sans-serif, system-ui,
+    sans-serif;
+  --font-mono: "JetBrains Mono Variable", ui-monospace, "Cascadia Code", "Consolas",
+    monospace;
 }
 
 @layer base {
@@ -59,6 +74,17 @@
     -webkit-font-smoothing: antialiased;
   }
 
+  /* Headings use the display face; body copy stays in Inter for readability. */
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+  }
+
+  ::selection {
+    background: color-mix(in srgb, var(--accent) 35%, transparent);
+  }
+
   :focus-visible {
     outline: 2px solid var(--accent);
     outline-offset: 2px;
@@ -76,7 +102,7 @@
   }
 }
 
-/* ---------- Futuristic effects ---------- */
+/* ---------- Effects ---------- */
 
 @keyframes fade-up {
   from {
@@ -120,11 +146,148 @@
   color: transparent;
 }
 
-/* Faint technical grid that fades out toward the edges. */
+/* Blueprint grid: accent-tinted lines that fade out toward the edges. */
 .bg-grid {
   background-image:
-    linear-gradient(to right, color-mix(in srgb, var(--line) 80%, transparent) 1px, transparent 1px),
-    linear-gradient(to bottom, color-mix(in srgb, var(--line) 80%, transparent) 1px, transparent 1px);
+    linear-gradient(to right, color-mix(in srgb, var(--accent) 11%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in srgb, var(--accent) 11%, transparent) 1px, transparent 1px);
   background-size: 48px 48px;
   mask-image: radial-gradient(ellipse at center, #000 30%, transparent 75%);
+}
+
+/* ---------- Stage 2: hero and navigation ---------- */
+
+/* Editorial display sizes for the hero name. A long name steps down a size
+   instead of overflowing (see lib/name.ts). */
+@utility text-display-xl {
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 16vw, 9.5rem);
+  font-weight: 600;
+  line-height: 0.92;
+  letter-spacing: -0.05em;
+}
+
+@utility text-display-lg {
+  font-family: var(--font-display);
+  font-size: clamp(2.75rem, 13vw, 7.75rem);
+  font-weight: 600;
+  line-height: 0.92;
+  letter-spacing: -0.05em;
+}
+
+@utility text-display-md {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 8.5vw, 6rem);
+  font-weight: 600;
+  line-height: 0.95;
+  letter-spacing: -0.045em;
+}
+
+@utility text-display-sm {
+  font-family: var(--font-display);
+  font-size: clamp(1.75rem, 6vw, 4.5rem);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+/* Section titles: large display type that still fits on a phone. */
+@utility text-headline {
+  font-family: var(--font-display);
+  font-size: clamp(2.25rem, 5.2vw, 4.25rem);
+  font-weight: 600;
+  line-height: 1.02;
+  letter-spacing: -0.04em;
+}
+
+/* Very faint film grain; always used at low opacity on decorative layers. */
+@utility bg-noise {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Headline lines slide up out of a clipped box. */
+@keyframes line-up {
+  from {
+    transform: translateY(105%);
+  }
+  to {
+    transform: none;
+  }
+}
+
+/* The perspective floor moves by exactly one grid cell, so the loop is seamless. */
+@keyframes grid-flow {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(64px);
+  }
+}
+
+@keyframes cube-spin {
+  from {
+    transform: rotateX(-20deg) rotateY(0deg);
+  }
+  to {
+    transform: rotateX(-20deg) rotateY(360deg);
+  }
+}
+
+@keyframes cube-spin-reverse {
+  from {
+    transform: rotateX(20deg) rotateY(360deg);
+  }
+  to {
+    transform: rotateX(20deg) rotateY(0deg);
+  }
+}
+
+@keyframes orbit {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes orbit-reverse {
+  to {
+    transform: rotate(-360deg);
+  }
+}
+
+@keyframes scroll-cue {
+  from {
+    transform: translateY(-100%);
+  }
+  to {
+    transform: translateY(200%);
+  }
+}
+
+.animate-line-up {
+  animation: line-up 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.animate-grid-flow {
+  animation: grid-flow 3.2s linear infinite;
+}
+
+.animate-cube-spin {
+  animation: cube-spin 28s linear infinite;
+}
+
+.animate-cube-spin-reverse {
+  animation: cube-spin-reverse 20s linear infinite;
+}
+
+.animate-orbit {
+  animation: orbit 46s linear infinite;
+}
+
+.animate-orbit-reverse {
+  animation: orbit-reverse 46s linear infinite;
+}
+
+.animate-scroll-cue {
+  animation: scroll-cue 2.4s cubic-bezier(0.6, 0, 0.3, 1) infinite;
 }

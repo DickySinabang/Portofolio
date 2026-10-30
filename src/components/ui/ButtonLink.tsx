@@ -17,14 +17,16 @@ type ButtonLinkProps = {
   className?: string
 }
 
+// "group" lets icons inside a button react to hovering the whole button,
+// e.g. className="transition-transform group-hover:translate-x-1".
 const baseStyles =
-  'inline-flex items-center justify-center gap-2 rounded-lg px-5 py-3 text-sm font-medium transition-colors'
+  'group inline-flex items-center justify-center gap-2 rounded-md px-5 py-3 text-sm font-medium transition duration-200 active:scale-[0.98]'
 
 const variantStyles: Record<Variant, string> = {
   primary:
-    'bg-accent text-accent-fg hover:opacity-90 hover:shadow-[0_0_28px_-6px_var(--accent)]',
+    'bg-accent text-accent-fg hover:brightness-110 hover:shadow-[0_0_32px_-6px_var(--accent)]',
   secondary:
-    'border border-line bg-surface text-foreground hover:border-accent hover:text-accent',
+    'border border-line bg-surface/60 text-foreground hover:border-accent hover:text-accent',
 }
 
 /** Link that looks like a button. Uses React Router for internal paths. */
@@ -56,7 +58,7 @@ export function ButtonLink({
         className={classes}
       >
         {children}
-        {external && <span className="sr-only"> (opens in a new tab)</span>}
+        {external && <span className="sr-only">, opens in a new tab</span>}
       </a>
     )
   }

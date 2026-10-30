@@ -121,7 +121,7 @@ export function ParticleField({ className = '' }: { className?: string }) {
       canvas.height = Math.floor(height * ratio)
       ctx.setTransform(ratio, 0, 0, ratio, 0, 0)
 
-      const count = Math.min(90, Math.floor((width * height) / 14000))
+      const count = Math.min(width < 640 ? 36 : 70, Math.floor((width * height) / 16000))
       particles = Array.from({ length: count }, () => ({
         x: Math.random() * width,
         y: Math.random() * height,

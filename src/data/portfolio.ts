@@ -14,26 +14,22 @@ import type {
 } from '../types/portfolio'
 
 export const site: SiteConfig = {
-  brand: 'DevPortfolio', // temporary brand name
+  brand: 'Portofolio', 
   description:
     'Portfolio of an Information Technology graduate and aspiring full-stack web developer: projects, skills, and experience.',
   closingMessage: 'Thanks for stopping by.',
 }
 
 export const profile: Profile = {
-  name: 'Your Name', // TODO: replace with your full name
-  title: 'Aspiring Full-Stack / Web Developer',
-  // Fill these in ONLY with details you want to be public.
-  // Empty values are hidden everywhere on the site.
-  email: '',
-  githubUrl: '',
-  linkedinUrl: '',
-  cvUrl: '',
+  name: 'Dicky Latare Tricaesar Sinabang',
+  title: 'Full-Stack Developer',
+  email: 'dickysinabang@gmail.com',
+  githubUrl: 'https://github.com/DickySinabang',
+  linkedinUrl: 'https://www.linkedin.com/in/dickylatare766',
+  cvUrl: '/cv/Dicky Latare Tricaesar Sinabang-resume.pdf',
 }
 
 export const hero: HeroContent = {
-  // Only fill this in if it is accurate, e.g. "Open to opportunities".
-  availability: '',
   headline: 'Building Thoughtful Digital Experiences.',
   intro:
     "I'm an Information Technology graduate interested in building practical web applications and exploring technologies that solve real-world problems.",
@@ -56,31 +52,29 @@ export const about: AboutContent = {
     'Internet of Things (IoT)',
     'Machine Learning',
   ],
-  // TODO: DRAFT. Rewrite these so they describe how YOU actually work.
   approach: [
     'Start by understanding the problem, then choose the tools.',
     'Build small working pieces first, then improve them.',
     'Read documentation and error messages carefully before changing code.',
   ],
-  // To show a photo, put a file in public/images/ and uncomment:
-  // photo: { src: '/images/profile.jpg', alt: 'Portrait of Your Name' },
+  photo: {
+    src: '/images/Pas Foto 4x6.jpeg',
+    alt: 'A photo of Dicky Latare Tricaesar Sinabang',
+  },
 }
 
 /**
- * HOW TO FILL THIS IN
- * Uncomment ONLY the skills you have really used or are really learning,
- * and be ready to talk about each one in an interview.
+ * Skills. Keep only what you have really used or are really learning, and be
+ * ready to talk about each one in an interview.
  *   status: 'used'     -> you have worked with it
  *   status: 'learning' -> you are currently studying it
- * Categories with no active skills are hidden automatically.
+ * Categories with no skills are hidden automatically.
  */
 export const skillCategories: SkillCategory[] = [
   {
     id: 'frontend',
     title: 'Frontend Development',
-    skills: [
-      { name: 'React', status: 'used' },
-    ],
+    skills: [{ name: 'React', status: 'used' }],
   },
   {
     id: 'backend',
@@ -103,16 +97,12 @@ export const skillCategories: SkillCategory[] = [
   {
     id: 'database',
     title: 'Database',
-    skills: [
-      { name: 'MySQL', status: 'used' },
-    ],
+    skills: [{ name: 'MySQL', status: 'used' }],
   },
   {
     id: 'mobile',
     title: 'Mobile Development',
-    skills: [
-      { name: 'Flutter', status: 'used' },
-    ],
+    skills: [{ name: 'Flutter', status: 'used' }],
   },
   {
     id: 'iot-ml',
@@ -132,78 +122,90 @@ export const skillCategories: SkillCategory[] = [
   },
 ]
 
+/**
+ * Experience. Replace the bracketed values with the real ones. To add another
+ * position, copy the whole object below and paste it after it (with a comma).
+ */
 export const experience: ExperienceEntry[] = [
   {
     id: 'karya-multi-solution-intern',
     position: 'Full-Stack Developer Intern',
     organization: 'PT Karya Multi Solution Indonesia',
     employmentType: 'Internship',
-    // TODO: add these only when you know the exact values.
-    location: '...',
-    startDate: '...',
-    endDate: '...',
+    location: '[CITY, COUNTRY]',
+    startDate: '[MONTH YEAR]',
+    endDate: '[MONTH YEAR]',
     description: 'Worked on an IoT-based smart building monitoring project.',
     responsibilities: [
       'Used web technologies and databases to support monitoring and dashboard functionality.',
       'Participated in IoT development and sensor integration activities.',
     ],
-    // TODO: list the exact technologies you used there, for example ['Laravel', 'MySQL'].
-    technologies: [],
+    // List only technologies you really used during this internship.
+    technologies: ['[TECHNOLOGY 1]', '[TECHNOLOGY 2]'],
   },
 ]
 
 /**
- * HOW TO ADD A PROJECT
- * 1. Copy the template below, remove the // markers, and fill in REAL information.
- * 2. Delete any optional line you have no real answer for.
- * 3. Screenshots: put image files in public/images/projects/ and reference them
- *    as '/images/projects/your-file.png'. Without images a placeholder is shown.
- * 4. Only add githubUrl / liveDemoUrl if the link really works.
+ * Projects. The object below is a complete template. To add a project, copy
+ * the whole object, paste it after the last one (with a comma), and fill it in.
  *
- * category must be one of: 'web' | 'backend' | 'mobile' | 'iot' | 'machine-learning'
+ *  - slug: unique, lowercase, letters/numbers/hyphens. It becomes /projects/<slug>.
+ *  - category: 'web' | 'backend' | 'mobile' | 'iot' | 'machine-learning'
+ *  - Screenshots: put image files in public/images/projects/ and reference them
+ *    as '/images/projects/your-file.png'.
+ *  - Delete any optional line you have no real answer for. Only keep githubUrl
+ *    and liveDemoUrl if the link really works.
  */
 export const projects: Project[] = [
-  // {
-  //   slug: 'my-project-name',
-  //   title: '[PROJECT NAME]',
-  //   description: '[ONE OR TWO SENTENCES ABOUT THE PROJECT]',
-  //   category: 'web',
-  //   technologies: ['[TECHNOLOGY 1]', '[TECHNOLOGY 2]'],
-  //   featured: true,
-  //   thumbnail: { src: '/images/projects/my-project-thumb.png', alt: 'Describe what the screenshot shows' },
-  //   overview: '[WHAT THE PROJECT IS]',
-  //   problem: '[THE PROBLEM IT ADDRESSES]',
-  //   objectives: ['[OBJECTIVE 1]'],
-  //   features: ['[FEATURE 1]'],
-  //   role: '[WHAT YOU PERSONALLY BUILT]',
-  //   challenges: ['[A REAL CHALLENGE YOU FACED]'],
-  //   implementation: '[HOW YOU BUILT IT]',
-  //   screenshots: [{ src: '/images/projects/my-project-1.png', alt: 'Describe the screenshot' }],
-  //   lessonsLearned: ['[WHAT YOU LEARNED]'],
-  //   githubUrl: 'https://github.com/your-username/your-repo',
-  //   liveDemoUrl: 'https://your-demo-url.example',
-  // },
+  {
+    slug: 'your-project-name',
+    title: '[PROJECT NAME]',
+    description: '[PROJECT DESCRIPTION IN ONE OR TWO SENTENCES]',
+    category: 'web',
+    technologies: ['[TECHNOLOGY 1]', '[TECHNOLOGY 2]'],
+    featured: true,
+    thumbnail: {
+      src: '/images/projects/project-placeholder-thumbnail.svg',
+      alt: '[DESCRIBE WHAT THE THUMBNAIL SHOWS]',
+    },
+    overview: '[WHAT THE PROJECT IS]',
+    problem: '[THE PROBLEM IT ADDRESSES]',
+    objectives: ['[OBJECTIVE 1]', '[OBJECTIVE 2]'],
+    features: ['[FEATURE 1]', '[FEATURE 2]'],
+    role: '[WHAT YOU PERSONALLY BUILT]',
+    implementation: '[HOW YOU BUILT IT]',
+    challenges: ['[A REAL CHALLENGE YOU FACED]'],
+    screenshots: [
+      {
+        src: '/images/projects/project-placeholder-screenshot.svg',
+        alt: '[DESCRIBE WHAT THE SCREENSHOT SHOWS]',
+      },
+    ],
+    lessonsLearned: ['[WHAT YOU LEARNED]'],
+    githubUrl: 'https://github.com/YOUR-GITHUB-USERNAME/YOUR-REPOSITORY',
+    liveDemoUrl: 'https://YOUR-DEMO-URL.example',
+  },
 ]
 
 /**
- * Optional section for academic work, research, experiments, or community activity.
- * Add ONLY things that are true. Leave the array empty to hide the section.
+ * Optional section for academic work, research, experiments, or community
+ * activity. Add only things that are true. An empty list hides the section.
  */
 export const highlights: Highlight[] = [
   {
-    id: 'my-highlight',
-    title: '[TITLE]',
+    id: 'highlight-template',
+    title: '[HIGHLIGHT TITLE]',
     description: '[WHAT YOU ACTUALLY DID]',
-    kind: 'Academic project',
+    kind: '[TYPE OF HIGHLIGHT]',
     period: '[YEAR]',
-    url: 'https://example.com', // only if the link really works
-    urlLabel: 'View repository',
+    url: 'https://YOUR-LINK.example',
+    urlLabel: '[LINK LABEL]',
   },
 ]
 
 export const contact: ContactContent = {
   heading: "Let's connect",
-  // TODO: edit this so it sounds like you.
+  // Edit this so it sounds like you.
   message:
     "If you'd like to talk about a project, an opportunity, or web development in general, feel free to reach out.",
 }

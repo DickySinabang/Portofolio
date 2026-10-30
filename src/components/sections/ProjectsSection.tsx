@@ -1,21 +1,26 @@
-import { useState } from 'react'
-import { projects } from '../../data/portfolio'
+import { useMemo, useState } from 'react'
+import { projects as portfolioProjects } from '../../data/portfolio'
 import {
   filterProjects,
   getProjectCategories,
   sortProjects,
   type ProjectFilterValue,
 } from '../../lib/projects'
+import type { Project } from '../../types/portfolio'
 import { Reveal } from '../ui/Reveal'
 import { Section } from '../ui/Section'
 import { ProjectCard } from './ProjectCard'
 import { ProjectFilter } from './ProjectFilter'
 
-const sortedProjects = sortProjects(projects)
-const categories = getProjectCategories(sortedProjects)
+type ProjectsSectionProps = {
+  /** Defaults to the data in portfolio.ts. Tests pass their own. */
+  items?: Project[]
+}
 
-export function ProjectsSection() {
+export function ProjectsSection({ items = portfolioProjects }: ProjectsSectionProps) {
   const [filter, setFilter] = useState<ProjectFilterValue>('all')
+  const sortedProjects = useMemo(() => sortProjects(items), [items])
+  const categories = useMemo(() => getProjectCategories(sortedProjects), [sortedProjects])
   const visibleProjects = filterProjects(sortedProjects, filter)
 
   return (
