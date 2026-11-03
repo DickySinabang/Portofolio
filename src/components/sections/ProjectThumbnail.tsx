@@ -43,9 +43,11 @@ export function ProjectThumbnail({ image, category }: ProjectThumbnailProps) {
   return (
     <div
       aria-hidden="true"
-      className="flex aspect-video w-full flex-col items-center justify-center gap-2 border-b border-line bg-background text-muted"
+      className="flex aspect-video w-full flex-col items-center justify-center gap-2 border-b border-line bg-[radial-gradient(circle_at_70%_30%,color-mix(in_srgb,var(--accent)_28%,transparent),transparent_55%),radial-gradient(circle_at_20%_80%,color-mix(in_srgb,var(--accent-2)_22%,transparent),transparent_50%)] bg-background/60 text-muted"
     >
-      <Icon className="size-8 text-accent" />
+      <span className="grid size-14 place-items-center rounded-full border border-accent/40 bg-background/50 shadow-[0_0_1.5rem_color-mix(in_srgb,var(--accent)_35%,transparent)]">
+        <Icon className="size-7 text-accent" />
+      </span>
       <span className="text-xs">Screenshot coming soon</span>
     </div>
   )

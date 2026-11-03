@@ -4,11 +4,11 @@ import { getDisplaySize, splitName } from './name'
 describe('splitName', () => {
   it('puts the last word on its own line', () => {
     expect(splitName('Ada Lovelace')).toEqual(['Ada', 'Lovelace'])
-    expect(splitName('Muhammad Dicky Sinabang')).toEqual(['Muhammad Dicky', 'Sinabang'])
+    expect(splitName('Dicky Latare Sinabang')).toEqual(['Dicky Latare', 'Sinabang'])
   })
 
   it('balances the two lines for longer names', () => {
-    expect(splitName('Muhammad Dicky Sinabang Putra')).toEqual(['Muhammad Dicky', 'Sinabang Putra'])
+    expect(splitName('Dicky Latare Tricaesar Sinabang')).toEqual(['Dicky Latare', 'Tricaesar Sinabang'])
     expect(splitName('Ana Maria de la Cruz')).toEqual(['Ana Maria', 'de la Cruz'])
   })
 
@@ -28,8 +28,8 @@ describe('getDisplaySize', () => {
   })
 
   it('steps down as the longest line grows', () => {
-    expect(getDisplaySize(['Sinabangputra'])).toBe('lg')
-    expect(getDisplaySize(['Muhammad Dicky', 'Sinabang'])).toBe('md')
+    expect(getDisplaySize(['Sinabang'])).toBe('lg')
+    expect(getDisplaySize(['Dicky Latare', 'Sinabang'])).toBe('md')
     expect(getDisplaySize(['Wolfeschlegelsteinhausen'])).toBe('sm')
   })
 

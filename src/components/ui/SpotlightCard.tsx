@@ -24,7 +24,7 @@ export function SpotlightCard({
   return (
     <Tag
       onPointerMove={handlePointerMove}
-      className={`group relative overflow-hidden rounded-xl border border-line bg-surface transition duration-300 hover:-translate-y-1 hover:border-accent/50 ${className}`}
+      className={`group relative overflow-hidden rounded-xl border border-line bg-surface/70 backdrop-blur-sm transition duration-300 hover:-translate-y-1 hover:border-accent/50 ${className}`}
     >
       <div
         aria-hidden="true"

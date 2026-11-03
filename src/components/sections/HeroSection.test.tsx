@@ -26,7 +26,7 @@ const data = vi.hoisted(() => ({
 }))
 
 vi.mock('../../data/portfolio', () => data)
-// The particle animation draws on a <canvas>, which jsdom cannot do.
+// The star field draws on a <canvas>, which jsdom cannot do.
 vi.mock('./ParticleField', () => ({ ParticleField: () => null }))
 
 function renderHero() {
@@ -71,13 +71,11 @@ describe('HeroSection', () => {
 
     expect(screen.queryByRole('link', { name: 'Contact Me' })).not.toBeInTheDocument()
     expect(screen.queryByRole('link', { name: /Download CV/ })).not.toBeInTheDocument()
-    expect(screen.queryByRole('link', { name: /GitHub/ })).not.toBeInTheDocument()
     expect(screen.queryByText('Open to opportunities')).not.toBeInTheDocument()
   })
 
-  it('shows contact, CV, social links, and availability when they exist', () => {
+  it('shows contact, CV, and availability when they exist', () => {
     data.profile.email = 'ada@example.com'
-    data.profile.githubUrl = 'https://github.com/ada'
     data.profile.cvUrl = '/cv/ada.pdf'
     data.hero.availability = 'Open to opportunities'
     renderHero()
@@ -88,12 +86,29 @@ describe('HeroSection', () => {
     expect(cv).toHaveAttribute('href', '/cv/ada.pdf')
     expect(cv).toHaveAttribute('download')
 
-    const github = screen.getByRole('link', { name: 'GitHub, opens in a new tab' })
-    expect(github).toHaveAttribute('href', 'https://github.com/ada')
-    expect(github).toHaveAttribute('target', '_blank')
-    expect(github).toHaveAttribute('rel', 'noopener noreferrer')
-
     expect(screen.getByText('Open to opportunities')).toBeInTheDocument()
+  })
+
+  it('offers exactly three buttons, and no social links', () => {
+    data.profile.email = 'ada@example.com'
+    data.profile.githubUrl = 'https://github.com/ada'
+    data.profile.linkedinUrl = 'https://www.linkedin.com/in/ada'
+    data.profile.cvUrl = '/cv/ada.pdf'
+    const { container } = renderHero()
+
+    expect(screen.getAllByRole('link').map((link) => link.textContent?.trim())).toEqual([
+      'View My Projects',
+      'Contact Me',
+      'Download CV',
+    ])
+    expect(screen.queryByRole('link', { name: /GitHub|LinkedIn/ })).not.toBeInTheDocument()
+    expect(container.querySelector('a[href^="mailto:"]')).toBeNull()
+  })
+
+  it('no longer shows the developer.ts code card', () => {
+    const { container } = renderHero()
+
+    expect(container).not.toHaveTextContent('developer.ts')
   })
 
   it('copes with a single-word name', () => {

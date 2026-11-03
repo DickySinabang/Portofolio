@@ -26,10 +26,10 @@ export function ProjectFilter({ categories, active, onChange }: ProjectFilterPro
             type="button"
             onClick={() => onChange(option.value)}
             aria-pressed={selected}
-            className={`rounded-lg border px-4 py-2 text-sm transition-colors ${
+            className={`rounded-full border px-4 py-2 text-sm transition-all ${
               selected
-                ? 'border-accent bg-accent font-medium text-accent-fg'
-                : 'border-line bg-surface text-muted hover:border-accent hover:text-foreground'
+                ? 'border-accent bg-accent font-medium text-accent-fg shadow-[0_0_1.2rem_color-mix(in_srgb,var(--accent)_45%,transparent)]'
+                : 'border-line bg-surface/70 text-muted backdrop-blur-sm hover:border-accent hover:text-foreground'
             }`}
           >
             {option.label}

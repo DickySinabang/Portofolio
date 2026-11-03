@@ -2,7 +2,6 @@ import type { AboutContent, ExperienceEntry, Profile } from '../types/portfolio'
 
 export type PathNode = {
   id: string
-  /** Short technical label, e.g. "Education". */
   label: string
   title: string
   detail: string
@@ -14,12 +13,6 @@ type PathInput = {
   profile: Profile
 }
 
-/**
- * Builds the "Path" strip from information that already exists in portfolio.ts:
- * education first, then each experience entry in the order it is listed, then
- * where things stand now. Nothing is invented, and no dates are shown here
- * (the Experience section carries those).
- */
 export function buildPath({ about, experience, profile }: PathInput): PathNode[] {
   const nodes: PathNode[] = [
     {

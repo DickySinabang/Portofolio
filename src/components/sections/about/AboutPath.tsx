@@ -6,11 +6,6 @@ type AboutPathProps = {
   className?: string
 }
 
-/**
- * A connected timeline: education, experience, and where things stand now.
- * Horizontal on wide screens, vertical on phones. The connecting line draws
- * itself the first time the strip scrolls into view.
- */
 export function AboutPath({ nodes, className = '' }: AboutPathProps) {
   if (nodes.length < 2) return null
 

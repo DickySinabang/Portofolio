@@ -48,4 +48,14 @@ describe('ProjectCard', () => {
     expect(screen.queryByRole('img', { name: 'Missing screenshot' })).not.toBeInTheDocument()
     expect(screen.getByText('Screenshot coming soon')).toBeInTheDocument()
   })
+
+  it('numbers the mission when given an index, as decoration only', () => {
+    render(
+      <MemoryRouter>
+        <ProjectCard project={fullProject} index={2} />
+      </MemoryRouter>,
+    )
+
+    expect(screen.getByText('MISSION 03')).toHaveAttribute('aria-hidden', 'true')
+  })
 })

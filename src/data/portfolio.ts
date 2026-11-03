@@ -129,19 +129,19 @@ export const skillCategories: SkillCategory[] = [
 export const experience: ExperienceEntry[] = [
   {
     id: 'karya-multi-solution-intern',
-    position: 'Full-Stack Developer Intern',
+    position: 'FullStack Developer Intern',
     organization: 'PT Karya Multi Solution Indonesia',
     employmentType: 'Internship',
-    location: '[CITY, COUNTRY]',
-    startDate: '[MONTH YEAR]',
-    endDate: '[MONTH YEAR]',
+    location: '[Bogor, Indonesia]',
+    startDate: '[June 2025]',
+    endDate: '[Aug 2025]',
     description: 'Worked on an IoT-based smart building monitoring project.',
     responsibilities: [
       'Used web technologies and databases to support monitoring and dashboard functionality.',
       'Participated in IoT development and sensor integration activities.',
     ],
     // List only technologies you really used during this internship.
-    technologies: ['[TECHNOLOGY 1]', '[TECHNOLOGY 2]'],
+    technologies: ['[PHP]', '[C++]'],
   },
 ]
 

@@ -17,7 +17,25 @@ type SectionProps = {
 
 const tones = {
   base: '',
-  raised: 'bg-surface/40',
+  raised: 'bg-surface/30 backdrop-blur-[2px]',
+}
+
+/** The numbered marker, the rule and the large title that open every section. */
+export function SectionHeader({ id, eyebrow, title }: { id: string; eyebrow: string; title: string }) {
+  return (
+    <>
+      <div className="flex items-center gap-4">
+        <SectionMarker index={getSectionNumber(navItems, id)} label={eyebrow} />
+        <span
+          aria-hidden="true"
+          className="h-px flex-1 bg-linear-to-r from-accent/40 via-line to-transparent"
+        />
+      </div>
+      <h2 id={`${id}-heading`} className="text-headline mt-6 max-w-4xl text-balance">
+        {title}
+      </h2>
+    </>
+  )
 }
 
 /**
@@ -43,16 +61,7 @@ export function Section({
     >
       <Container size="wide">
         <Reveal>
-          <div className="flex items-center gap-4">
-            <SectionMarker index={getSectionNumber(navItems, id)} label={eyebrow} />
-            <span
-              aria-hidden="true"
-              className="h-px flex-1 bg-linear-to-r from-accent/40 via-line to-transparent"
-            />
-          </div>
-          <h2 id={headingId} className="text-headline mt-6 max-w-4xl text-balance">
-            {title}
-          </h2>
+          <SectionHeader id={id} eyebrow={eyebrow} title={title} />
         </Reveal>
         <Reveal delay={120} className="mt-12">
           {children}

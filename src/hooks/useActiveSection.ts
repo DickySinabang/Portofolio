@@ -1,9 +1,5 @@
 import { useEffect, useState } from 'react'
 
-/**
- * Reports which section is currently crossing a thin band near the
- * upper-middle of the viewport. Used to highlight the navbar link.
- */
 export function useActiveSection(sectionIds: string[], enabled: boolean) {
   const [activeId, setActiveId] = useState<string | null>(null)
 

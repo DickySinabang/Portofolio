@@ -4,11 +4,6 @@ import { useActiveSection } from '../../hooks/useActiveSection'
 
 const sectionIds = navItems.map((item) => item.sectionId)
 
-/**
- * A thin progress rail on the right edge (wide screens, home page only) showing
- * which section you are in. Purely decorative: the navbar is the real navigation,
- * so this is hidden from assistive technology and cannot take focus.
- */
 export function SectionRail() {
   const { pathname } = useLocation()
   const isHome = pathname === '/'

@@ -1,10 +1,6 @@
 import { useEffect } from 'react'
 import { useLocation } from 'react-router'
 
-/**
- * React Router changes the URL for "/#about" but does not scroll to it.
- * This component does the scrolling, and resets to the top on other pages.
- */
 export function ScrollToHash() {
   const { pathname, hash, key } = useLocation()
 

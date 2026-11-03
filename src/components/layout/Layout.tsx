@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useLayoutEffect, useState } from 'react'
 import { Outlet } from 'react-router'
 import { CommandPalette } from '../ui/CommandPalette'
 import { ScrollProgress } from '../ui/ScrollProgress'
+import { Cosmos } from './Cosmos'
 import { Footer } from './Footer'
 import { Navbar } from './Navbar'
 import { ScrollToHash } from './ScrollToHash'
@@ -9,9 +10,7 @@ import { SectionRail } from './SectionRail'
 
 export function Layout() {
   const [paletteOpen, setPaletteOpen] = useState(false)
-
-  // Ctrl+K (or Cmd+K on Mac) toggles the command palette from anywhere.
-  useEffect(() => {
+  useLayoutEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
       if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
         event.preventDefault()
@@ -25,6 +24,7 @@ export function Layout() {
 
   return (
     <div className="flex min-h-screen flex-col">
+      <Cosmos />
       <ScrollToHash />
       <ScrollProgress />
       <SectionRail />

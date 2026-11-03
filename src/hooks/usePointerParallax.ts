@@ -1,14 +1,6 @@
 import { useEffect, type RefObject } from 'react'
 import { useReducedMotion } from './useReducedMotion'
 
-/**
- * Writes the pointer position to two CSS variables on the referenced element:
- * --px and --py, each from -1 (left/top) to 1 (right/bottom), eased so movement
- * feels smooth. CSS then uses them for tilt and parallax.
- *
- * React never re-renders while the pointer moves, the loop stops once the
- * values settle, and nothing runs for reduced-motion visitors or touch screens.
- */
 export function usePointerParallax(ref: RefObject<HTMLElement | null>) {
   const reduced = useReducedMotion()
 

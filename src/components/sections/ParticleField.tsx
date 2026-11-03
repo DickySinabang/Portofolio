@@ -1,27 +1,40 @@
 import { useEffect, useRef } from 'react'
 import { useReducedMotion } from '../../hooks/useReducedMotion'
+import { subscribeScroll } from '../../lib/scrollBus'
 
-type Particle = { x: number; y: number; vx: number; vy: number }
+type Star = {
+  x: number // 0 to 1 across the viewport
+  y: number // 0 to 1 down the viewport
+  radius: number
+  depth: number // 0.2 (far, barely moves) to 1 (near)
+  alpha: number
+  phase: number
+  speed: number
+}
 
-const LINK_DISTANCE = 120
-const POINTER_RADIUS = 160
+type Meteor = { x: number; y: number; vx: number; vy: number; age: number; life: number }
 
-/** Reads the current theme's accent color (e.g. #818cf8) as "r, g, b". */
-function readAccentRgb(): string {
-  const value = getComputedStyle(document.documentElement)
-    .getPropertyValue('--accent')
-    .trim()
+const FRAME_MS = 1000 / 30 // twinkling does not need more than 30 fps
+const METEOR_TAIL = 150
+
+/** Reads the current theme's star color (e.g. #dfe6ff) as "r, g, b". */
+function readStarRgb(): string {
+  const value = getComputedStyle(document.documentElement).getPropertyValue('--star').trim()
   const match = /^#([0-9a-f]{6})$/i.exec(value)
-  if (!match) return '129, 140, 248'
+  if (!match) return '223, 230, 255'
   const n = parseInt(match[1], 16)
   return `${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}`
 }
 
 /**
- * Decorative network of drifting dots. Nearby dots connect with lines, and the
- * cursor connects to and gently pushes dots away. Pauses when off-screen.
+ * The star field behind the whole page: twinkling stars that drift slightly as
+ * you scroll (nearer stars move more), and an occasional shooting star.
+ * Decorative. With reduced motion it draws one still frame.
+ *
+ * (The file keeps its old name, ParticleField, so existing imports and the
+ * tests that mock it keep working.)
  */
-export function ParticleField({ className = '' }: { className?: string }) {
+export function ParticleField({ className = 'fixed inset-0 size-full' }: { className?: string }) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const reduced = useReducedMotion()
 
@@ -34,147 +47,137 @@ export function ParticleField({ className = '' }: { className?: string }) {
     let height = 0
     let frame = 0
     let running = false
-    let inView = true
-    let color = readAccentRgb()
-    let particles: Particle[] = []
-    const pointer = { x: -9999, y: -9999 }
+    let lastDraw = 0
+    let color = readStarRgb()
+    let stars: Star[] = []
+    let meteor: Meteor | null = null
+    let nextMeteorAt = performance.now() + 5000 + Math.random() * 5000
 
-    const draw = () => {
+    const makeStars = () => {
+      const count = Math.round(Math.min(Math.max((width * height) / 6500, 80), width < 640 ? 120 : 260))
+      stars = Array.from({ length: count }, () => {
+        const depth = 0.2 + Math.random() * 0.8
+        return {
+          x: Math.random(),
+          y: Math.random(),
+          radius: 0.4 + depth * (Math.random() < 0.06 ? 1.6 : 0.9),
+          depth,
+          alpha: 0.35 + depth * 0.55,
+          phase: Math.random() * Math.PI * 2,
+          speed: 0.6 + Math.random() * 1.8,
+        }
+      })
+    }
+
+    const draw = (now: number) => {
       ctx.clearRect(0, 0, width, height)
-      ctx.lineWidth = 1
+      const seconds = now / 1000
+      const scroll = window.scrollY
 
-      for (let i = 0; i < particles.length; i++) {
-        const p = particles[i]
-
-        for (let j = i + 1; j < particles.length; j++) {
-          const q = particles[j]
-          const distance = Math.hypot(p.x - q.x, p.y - q.y)
-          if (distance < LINK_DISTANCE) {
-            ctx.strokeStyle = `rgba(${color}, ${(1 - distance / LINK_DISTANCE) * 0.25})`
-            ctx.beginPath()
-            ctx.moveTo(p.x, p.y)
-            ctx.lineTo(q.x, q.y)
-            ctx.stroke()
-          }
-        }
-
-        const pointerDistance = Math.hypot(p.x - pointer.x, p.y - pointer.y)
-        if (pointerDistance < POINTER_RADIUS) {
-          ctx.strokeStyle = `rgba(${color}, ${(1 - pointerDistance / POINTER_RADIUS) * 0.5})`
-          ctx.beginPath()
-          ctx.moveTo(p.x, p.y)
-          ctx.lineTo(pointer.x, pointer.y)
-          ctx.stroke()
-        }
-
-        ctx.fillStyle = `rgba(${color}, 0.7)`
+      for (const star of stars) {
+        const twinkle = reduced ? 0.85 : 0.55 + 0.45 * Math.sin(seconds * star.speed + star.phase)
+        // Nearer stars slide up a little faster than far ones as the page scrolls.
+        let y = star.y * height - scroll * star.depth * 0.1
+        y = ((y % height) + height) % height
+        ctx.fillStyle = `rgba(${color}, ${(star.alpha * twinkle).toFixed(3)})`
         ctx.beginPath()
-        ctx.arc(p.x, p.y, 1.6, 0, Math.PI * 2)
+        ctx.arc(star.x * width, y, star.radius, 0, Math.PI * 2)
         ctx.fill()
       }
-    }
 
-    const step = () => {
-      for (const p of particles) {
-        p.x += p.vx
-        p.y += p.vy
-
-        const dx = p.x - pointer.x
-        const dy = p.y - pointer.y
-        const distance = Math.hypot(dx, dy)
-        if (distance > 0 && distance < POINTER_RADIUS) {
-          p.x += (dx / distance) * 0.6
-          p.y += (dy / distance) * 0.6
-        }
-
-        if (p.x < 0) p.x = width
-        else if (p.x > width) p.x = 0
-        if (p.y < 0) p.y = height
-        else if (p.y > height) p.y = 0
+      if (meteor) {
+        const progress = meteor.age / meteor.life
+        const fade = Math.sin(progress * Math.PI) // in, then out
+        const speed = Math.hypot(meteor.vx, meteor.vy)
+        const tailX = meteor.x - (meteor.vx / speed) * METEOR_TAIL
+        const tailY = meteor.y - (meteor.vy / speed) * METEOR_TAIL
+        const gradient = ctx.createLinearGradient(tailX, tailY, meteor.x, meteor.y)
+        gradient.addColorStop(0, `rgba(${color}, 0)`)
+        gradient.addColorStop(1, `rgba(${color}, ${(0.9 * fade).toFixed(3)})`)
+        ctx.strokeStyle = gradient
+        ctx.lineWidth = 1.4
+        ctx.beginPath()
+        ctx.moveTo(tailX, tailY)
+        ctx.lineTo(meteor.x, meteor.y)
+        ctx.stroke()
       }
-      draw()
-      frame = requestAnimationFrame(step)
     }
 
-    const start = () => {
-      if (running || reduced) return
-      running = true
+    const step = (now: number) => {
       frame = requestAnimationFrame(step)
-    }
+      const elapsed = now - lastDraw
+      if (elapsed < FRAME_MS) return
+      lastDraw = now
 
-    const stop = () => {
-      running = false
-      cancelAnimationFrame(frame)
+      if (meteor) {
+        meteor.x += meteor.vx
+        meteor.y += meteor.vy
+        meteor.age += elapsed
+        if (meteor.age >= meteor.life) meteor = null
+      } else if (now > nextMeteorAt) {
+        const angle = Math.PI * (0.14 + Math.random() * 0.12) // shallow, downward
+        const speed = 14 + Math.random() * 6
+        meteor = {
+          x: width * (0.1 + Math.random() * 0.7),
+          y: height * Math.random() * 0.4,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed,
+          age: 0,
+          life: 900 + Math.random() * 400,
+        }
+        nextMeteorAt = now + 7000 + Math.random() * 9000
+      }
+      draw(now)
     }
 
     const update = () => {
-      if (inView && !document.hidden) start()
-      else stop()
+      const shouldRun = !reduced && !document.hidden
+      if (shouldRun && !running) {
+        running = true
+        frame = requestAnimationFrame(step)
+      } else if (!shouldRun && running) {
+        running = false
+        cancelAnimationFrame(frame)
+      }
     }
 
     const resize = () => {
-      const rect = canvas.getBoundingClientRect()
-      const ratio = Math.min(window.devicePixelRatio || 1, 2)
-      width = rect.width
-      height = rect.height
+      const ratio = Math.min(window.devicePixelRatio || 1, window.innerWidth < 640 ? 1.5 : 2)
+      const widthChanged = Math.abs(window.innerWidth - width) > 1
+      width = window.innerWidth
+      height = window.innerHeight
       canvas.width = Math.floor(width * ratio)
       canvas.height = Math.floor(height * ratio)
       ctx.setTransform(ratio, 0, 0, ratio, 0, 0)
-
-      const count = Math.min(width < 640 ? 36 : 70, Math.floor((width * height) / 16000))
-      particles = Array.from({ length: count }, () => ({
-        x: Math.random() * width,
-        y: Math.random() * height,
-        vx: (Math.random() - 0.5) * 0.3,
-        vy: (Math.random() - 0.5) * 0.3,
-      }))
-      draw() // With reduced motion this single frame is all that is shown.
+      // Phones resize constantly as the address bar hides; keep the same stars then.
+      if (widthChanged || stars.length === 0) makeStars()
+      draw(performance.now())
     }
 
-    const onPointerMove = (event: PointerEvent) => {
-      const rect = canvas.getBoundingClientRect()
-      pointer.x = event.clientX - rect.left
-      pointer.y = event.clientY - rect.top
+    const onScroll = () => {
+      if (!running) draw(performance.now()) // reduced motion: keep the parallax honest
     }
 
-    const onBlur = () => {
-      pointer.x = -9999
-      pointer.y = -9999
-    }
-
-    const resizeObserver = new ResizeObserver(resize)
-    resizeObserver.observe(canvas)
-
-    const intersectionObserver = new IntersectionObserver(([entry]) => {
-      inView = entry.isIntersecting
-      update()
-    })
-    intersectionObserver.observe(canvas)
-
-    // Re-read the accent color whenever the theme class on <html> changes.
+    // Re-read the star color whenever the theme class on <html> changes.
     const themeObserver = new MutationObserver(() => {
-      color = readAccentRgb()
-      if (!running) draw()
+      color = readStarRgb()
+      if (!running) draw(performance.now())
     })
-    themeObserver.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ['class'],
-    })
+    themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] })
 
-    window.addEventListener('pointermove', onPointerMove, { passive: true })
-    window.addEventListener('blur', onBlur)
+    window.addEventListener('resize', resize)
     document.addEventListener('visibilitychange', update)
 
     resize()
     update()
+    const unsubscribeScroll = subscribeScroll(onScroll)
 
     return () => {
-      stop()
-      resizeObserver.disconnect()
-      intersectionObserver.disconnect()
+      unsubscribeScroll()
+      running = false
+      cancelAnimationFrame(frame)
       themeObserver.disconnect()
-      window.removeEventListener('pointermove', onPointerMove)
-      window.removeEventListener('blur', onBlur)
+      window.removeEventListener('resize', resize)
       document.removeEventListener('visibilitychange', update)
     }
   }, [reduced])

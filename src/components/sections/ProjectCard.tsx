@@ -7,15 +7,26 @@ import { SpotlightCard } from '../ui/SpotlightCard'
 import { ProjectLinks } from './ProjectLinks'
 import { ProjectThumbnail } from './ProjectThumbnail'
 
-export function ProjectCard({ project }: { project: Project }) {
+export function ProjectCard({ project, index }: { project: Project; index?: number }) {
   return (
     <SpotlightCard as="article" className="h-full">
       <ProjectThumbnail image={project.thumbnail} category={project.category} />
 
       <div className="flex flex-1 flex-col p-6">
-        <p className="font-mono text-xs text-accent">
-          {projectCategoryLabels[project.category]}
-        </p>
+        <div className="flex items-center justify-between gap-3 font-mono text-xs">
+          <p className="inline-flex items-center gap-2 text-accent">
+            <span
+              aria-hidden="true"
+              className="size-1.5 rounded-full bg-accent-3 shadow-[0_0_0.5rem_var(--accent-3)]"
+            />
+            {projectCategoryLabels[project.category]}
+          </p>
+          {index !== undefined && (
+            <span aria-hidden="true" className="text-muted">
+              MISSION {String(index + 1).padStart(2, '0')}
+            </span>
+          )}
+        </div>
         <h3 className="mt-2 text-xl font-semibold tracking-tight">{project.title}</h3>
         <p className="mt-3 text-sm leading-relaxed text-muted">{project.description}</p>
 

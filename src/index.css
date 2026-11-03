@@ -1,41 +1,40 @@
 @import "tailwindcss";
-
-/* Dark mode is controlled by a "dark" class on <html>, not the OS setting. */
 @custom-variant dark (&:where(.dark, .dark *));
 
-/*
- * DESIGN TOKENS ("Night Blueprint")
- * Light is the default; .dark overrides it. Components never use raw colors,
- * only the utilities generated below (bg-background, text-muted, border-line...).
- *
- * Colors are plain #rrggbb hex on purpose: ParticleField reads --accent and
- * parses it. Every text pair was checked against WCAG AA (4.5:1); the lowest
- * text ratio is the light-theme lime at 4.61:1.
- */
 :root {
   color-scheme: light;
-  --bg: #f3f6fb;
+  --bg: #eef1fb;
   --fg: #0a1020;
   --muted: #4a5675;
   --surface: #ffffff;
-  --line: #d5dcea;
-  --accent: #0e7490; /* cyan, the primary accent */
-  --accent-2: #5b4bd6; /* violet, the secondary accent */
-  --accent-3: #4d7c0f; /* lime, used sparingly for live/status details */
+  --line: #d3dbee;
+  --accent: #3347c9; /* cosmic blue, the primary accent */
+  --accent-2: #6340c9; /* violet, the secondary accent */
+  --accent-3: #0b7088; /* cyan, used sparingly for live/status details */
   --accent-fg: #ffffff; /* text on top of --accent */
+  --star: #4a5bd0; /* star color, read by ParticleField */
+  --nebula-a: #7c93ff;
+  --nebula-b: #b197ff;
+  --nebula-c: #5ee7ff;
+  --nebula-opacity: 0.16;
 }
 
 .dark {
   color-scheme: dark;
-  --bg: #05070d;
+  --bg: #02040b;
   --fg: #e8ecf8;
   --muted: #9aa5c4;
-  --surface: #0a0f1c;
-  --line: #1b2338;
-  --accent: #22d3ee;
-  --accent-2: #9b8cff;
-  --accent-3: #c6f432;
-  --accent-fg: #04121a;
+  --surface: #080c1a;
+  --line: #1a2240;
+  --accent: #7c93ff;
+  --accent-2: #b197ff;
+  --accent-3: #5ee7ff;
+  --accent-fg: #02040b;
+  --star: #dfe6ff;
+  --nebula-a: #3b4bd6;
+  --nebula-b: #7a3fd0;
+  --nebula-c: #1b8fb8;
+  --nebula-opacity: 0.42;
 }
 
 @theme inline {
@@ -146,15 +145,6 @@
   color: transparent;
 }
 
-/* Blueprint grid: accent-tinted lines that fade out toward the edges. */
-.bg-grid {
-  background-image:
-    linear-gradient(to right, color-mix(in srgb, var(--accent) 11%, transparent) 1px, transparent 1px),
-    linear-gradient(to bottom, color-mix(in srgb, var(--accent) 11%, transparent) 1px, transparent 1px);
-  background-size: 48px 48px;
-  mask-image: radial-gradient(ellipse at center, #000 30%, transparent 75%);
-}
-
 /* ---------- Stage 2: hero and navigation ---------- */
 
 /* Editorial display sizes for the hero name. A long name steps down a size
@@ -215,46 +205,6 @@
   }
 }
 
-/* The perspective floor moves by exactly one grid cell, so the loop is seamless. */
-@keyframes grid-flow {
-  from {
-    transform: translateY(0);
-  }
-  to {
-    transform: translateY(64px);
-  }
-}
-
-@keyframes cube-spin {
-  from {
-    transform: rotateX(-20deg) rotateY(0deg);
-  }
-  to {
-    transform: rotateX(-20deg) rotateY(360deg);
-  }
-}
-
-@keyframes cube-spin-reverse {
-  from {
-    transform: rotateX(20deg) rotateY(360deg);
-  }
-  to {
-    transform: rotateX(20deg) rotateY(0deg);
-  }
-}
-
-@keyframes orbit {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@keyframes orbit-reverse {
-  to {
-    transform: rotate(-360deg);
-  }
-}
-
 @keyframes scroll-cue {
   from {
     transform: translateY(-100%);
@@ -268,26 +218,124 @@
   animation: line-up 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 
-.animate-grid-flow {
-  animation: grid-flow 3.2s linear infinite;
-}
-
-.animate-cube-spin {
-  animation: cube-spin 28s linear infinite;
-}
-
-.animate-cube-spin-reverse {
-  animation: cube-spin-reverse 20s linear infinite;
-}
-
-.animate-orbit {
-  animation: orbit 46s linear infinite;
-}
-
-.animate-orbit-reverse {
-  animation: orbit-reverse 46s linear infinite;
-}
-
 .animate-scroll-cue {
   animation: scroll-cue 2.4s cubic-bezier(0.6, 0, 0.3, 1) infinite;
+}
+
+/* ---------- Cosmos: page-wide background and hero planet ---------- */
+
+@keyframes nebula-drift {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    transform: translate3d(4vw, -3vh, 0) scale(1.14);
+  }
+}
+
+/* Soft clouds of color. Radial gradients instead of blur filters keep them cheap. */
+.nebula {
+  position: absolute;
+  border-radius: 9999px;
+  opacity: var(--nebula-opacity);
+  background: radial-gradient(closest-side, var(--nebula-tint), transparent);
+  animation: nebula-drift 70s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+/* A faint, distant galaxy: a tilted ellipse with a brighter core. */
+.galaxy {
+  position: absolute;
+  top: 12%;
+  right: 6%;
+  width: min(40vw, 36rem);
+  aspect-ratio: 3 / 1;
+  transform: rotate(-24deg);
+  opacity: calc(var(--nebula-opacity) * 0.9);
+  background:
+    radial-gradient(closest-side, color-mix(in srgb, var(--star) 70%, transparent), transparent 22%),
+    radial-gradient(closest-side, color-mix(in srgb, var(--nebula-b) 55%, transparent), transparent 75%);
+  filter: blur(1.5px);
+}
+
+/* A gentle darkening behind text, so stars never fight with words. */
+@utility scrim {
+  background: radial-gradient(
+    ellipse 75% 90% at 24% 50%,
+    color-mix(in srgb, var(--bg) 82%, transparent),
+    transparent 78%
+  );
+}
+
+/* CSS planet: the fallback for browsers without WebGL and for reduced motion. The same huge
+   Earth as the 3D intro: its radius is 66% of the screen width, its top edge 15% below the top. */
+.planet-css {
+  position: absolute;
+  top: 15vh;
+  left: -13vw;
+  width: 132vw;
+  aspect-ratio: 1;
+  border-radius: 9999px;
+  background:
+    radial-gradient(circle at 74% 22%, rgb(120 190 255 / 0.55), transparent 40%),
+    radial-gradient(circle at 62% 30%, #1d5fc4 0%, #0b2f78 38%, #040e2c 66%, #02050f 100%);
+  box-shadow:
+    inset 0 0.5rem 3rem rgb(110 180 255 / 0.55),
+    0 0 6rem 1.5rem rgb(50 130 255 / 0.4),
+    0 0 1rem 0.1rem rgb(130 200 255 / 0.7);
+}
+
+/* The NASA picture of the surface, shaded so the left side falls into night. */
+.planet-photo {
+  background:
+    linear-gradient(90deg, rgb(2 5 15 / 0.88) 0%, rgb(2 5 15 / 0.6) 38%, transparent 78%),
+    radial-gradient(circle at 80% 18%, transparent 0%, rgb(2 5 15 / 0.1) 38%, rgb(2 5 15 / 0.88) 82%),
+    url('/textures/earth/earth-day-2k.jpg') 66% 52% / 260% auto no-repeat,
+    #040e2c;
+}
+
+@media (max-aspect-ratio: 1 / 1) {
+  .planet-css {
+    top: 58vh;
+    left: -45vw;
+    width: 190vw;
+  }
+}
+
+/* Once the 3D Earth is drawing, the CSS one fades away (and stops being rendered). */
+.planet-fallback {
+  /* A layer of its own: scrolling only moves and fades it, and never repaints the big picture. */
+  will-change: transform, opacity;
+  transition:
+    opacity 0.7s ease,
+    visibility 0s linear 0s;
+}
+
+[data-planet='webgl'] .planet-fallback {
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 0.7s ease,
+    visibility 0s linear 0.7s;
+}
+
+/* ---------- Contact: expanding signal rings ("transmission") ---------- */
+
+@keyframes transmit {
+  from {
+    transform: scale(0.25);
+    opacity: 0.55;
+  }
+  to {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+
+.signal-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  border: 1px solid var(--accent-3);
+  animation: transmit 6s ease-out infinite;
 }

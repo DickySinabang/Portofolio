@@ -1,16 +1,13 @@
 import type { CSSProperties } from 'react'
-import { ArrowRight, ArrowUpRight, Download } from 'lucide-react'
+import { ArrowRight, Download } from 'lucide-react'
 import { about, hero, profile } from '../../data/portfolio'
 import { getDisplaySize, splitName } from '../../lib/name'
-import { getSocialLinks, hasContactDetails } from '../../lib/socialLinks'
+import { hasContactDetails } from '../../lib/socialLinks'
 import { ButtonLink } from '../ui/ButtonLink'
 import { Container } from '../ui/Container'
 import { RotatingText } from '../ui/RotatingText'
 import { SectionMarker } from '../ui/SectionMarker'
-import { HeroArtifact } from './HeroArtifact'
-import { HeroCodeCard } from './HeroCodeCard'
 import { HeroTelemetry } from './HeroTelemetry'
-import { ParticleField } from './ParticleField'
 
 const nameSizeClasses = {
   xl: 'text-display-xl',
@@ -22,38 +19,9 @@ const nameSizeClasses = {
 /** Staggers the entrance animation of each hero element. */
 const stagger = (ms: number): CSSProperties => ({ animationDelay: `${ms}ms` })
 
-const floorGrid: CSSProperties = {
-  backgroundImage:
-    'linear-gradient(to right, color-mix(in srgb, var(--accent) 30%, transparent) 1px, transparent 1px), linear-gradient(to bottom, color-mix(in srgb, var(--accent) 30%, transparent) 1px, transparent 1px)',
-  backgroundSize: '64px 64px',
-}
-
-/** Layered decoration: blueprint grid, perspective floor, glows, particles, grain. */
-function HeroBackdrop() {
-  return (
-    <div aria-hidden="true" className="absolute inset-0 -z-10">
-      <div className="bg-grid absolute inset-0 opacity-50" />
-
-      {/* A grid floor receding to the horizon; it flows toward the viewer. */}
-      <div className="absolute inset-x-0 bottom-0 h-[55%] overflow-hidden [mask-image:linear-gradient(to_top,#000_8%,transparent_92%)] [perspective:520px]">
-        <div className="absolute inset-x-[-70%] top-0 bottom-0 origin-bottom [transform:rotateX(64deg)]">
-          <div className="animate-grid-flow absolute inset-x-0 -top-16 bottom-0" style={floorGrid} />
-        </div>
-      </div>
-
-      <div className="animate-float absolute -top-10 -left-32 size-[28rem] rounded-full bg-accent/15 blur-3xl" />
-      <div className="animate-float absolute -right-24 bottom-0 size-[26rem] rounded-full bg-accent-2/15 blur-3xl [animation-delay:-7s]" />
-
-      <ParticleField className="absolute inset-0 size-full" />
-      <div className="bg-noise absolute inset-0 opacity-[0.05] mix-blend-overlay" />
-    </div>
-  )
-}
-
 export function HeroSection() {
   const availability = hero.availability?.trim()
   const cvUrl = profile.cvUrl?.trim()
-  const socialLinks = getSocialLinks(profile)
   const showContact = hasContactDetails(profile)
 
   const lines = splitName(profile.name)
@@ -65,16 +33,14 @@ export function HeroSection() {
       aria-labelledby="home-heading"
       className="relative isolate overflow-hidden border-b border-line"
     >
-      <HeroBackdrop />
+      {/* The page-wide cosmos shows through; this only adds a soft glow and a text scrim. */}
+      <div aria-hidden="true" className="absolute inset-0 -z-10">
+        <div className="scrim absolute inset-0" />
+        <div className="animate-float absolute top-1/4 right-0 size-[30rem] rounded-full bg-accent-2/10 blur-3xl [animation-delay:-5s]" />
+      </div>
 
       <Container size="wide" className="flex min-h-[calc(100svh-5rem)] flex-col py-6 sm:py-10">
         <div className="relative flex flex-1 items-center">
-          {/* The artifact sits behind the text so the name can overlap it. */}
-          <div className="pointer-events-none absolute top-0 -right-16 w-[min(80vw,26rem)] opacity-60 sm:-right-8 md:w-[22rem] lg:top-1/2 lg:right-0 lg:w-[min(40vw,36rem)] lg:-translate-y-1/2 lg:opacity-100 xl:right-20">
-            <HeroArtifact />
-            <HeroCodeCard className="absolute -bottom-2 -left-24 hidden w-72 lg:block xl:-left-32" />
-          </div>
-
           <div className="relative z-10 max-w-5xl py-4 sm:py-6">
             <div
               className="animate-fade-up flex flex-wrap items-center gap-x-5 gap-y-3"
@@ -97,10 +63,12 @@ export function HeroSection() {
                 const isLast = index === lines.length - 1
                 return (
                   <span key={index}>
-                    {/* The clipped box makes each line slide up into view. */}
-                    <span className="-mb-[0.12em] block overflow-hidden pb-[0.12em]">
+                    {/* The clipped box makes each line slide up into view. Its bottom
+                        padding gives the descenders (g, y, p) room, so a tail is never
+                        cut off, and the negative margin cancels it out in the layout. */}
+                    <span className="-mb-[0.32em] block overflow-hidden pb-[0.12em]">
                       <span
-                        className={`animate-line-up block ${isLast ? 'text-gradient' : ''}`}
+                        className={`animate-line-up block pb-[0.2em] ${isLast ? 'text-gradient' : ''}`}
                         style={stagger(120 + index * 120)}
                       >
                         {line}
@@ -156,36 +124,6 @@ export function HeroSection() {
                 </ButtonLink>
               )}
             </div>
-
-            {socialLinks.length > 0 && (
-              <ul
-                className="animate-fade-up mt-8 flex flex-wrap gap-x-6 gap-y-2"
-                style={stagger(700)}
-              >
-                {socialLinks.map((link) => (
-                  <li key={link.id}>
-                    <a
-                      href={link.href}
-                      {...(link.external
-                        ? { target: '_blank', rel: 'noopener noreferrer' }
-                        : {})}
-                      className="group inline-flex items-center gap-1 text-sm text-muted transition-colors hover:text-foreground"
-                    >
-                      {link.label}
-                      {link.external && (
-                        <>
-                          <ArrowUpRight
-                            aria-hidden="true"
-                            className="size-4 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
-                          />
-                          <span className="sr-only">, opens in a new tab</span>
-                        </>
-                      )}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            )}
           </div>
         </div>
 

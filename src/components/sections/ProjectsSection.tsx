@@ -47,7 +47,7 @@ export function ProjectsSection({ items = portfolioProjects }: ProjectsSectionPr
             {visibleProjects.map((project, index) => (
               <li key={project.slug} className="flex">
                 <Reveal className="h-full w-full" delay={(index % 3) * 80}>
-                  <ProjectCard project={project} />
+                  <ProjectCard project={project} index={index} />
                 </Reveal>
               </li>
             ))}

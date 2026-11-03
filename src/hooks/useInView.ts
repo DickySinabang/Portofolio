@@ -6,11 +6,6 @@ type InViewOptions = {
   rootMargin?: string
 }
 
-/**
- * Reports whether an element has scrolled into view. Once it has, it stays true,
- * so entrance animations play a single time. With reduced motion it is true
- * straight away, so nothing is ever left hidden.
- */
 export function useInView<T extends Element>({
   threshold = 0.1,
   rootMargin = '0px 0px -8% 0px',
