@@ -3,14 +3,11 @@ import { useNavigate } from 'react-router'
 import { Search } from 'lucide-react'
 import { navItems, profile, projects } from '../../data/portfolio'
 import { useTheme } from '../../hooks/useTheme'
+import { features } from '../../lib/features'
 import { buildCommands, filterCommands, type PaletteCommand } from '../../lib/commands'
 
 type PaletteBodyProps = { onClose: () => void }
 
-/**
- * The inside of the palette. It is only mounted while the palette is open,
- * so the search text and highlighted row reset automatically each time.
- */
 function PaletteBody({ onClose }: PaletteBodyProps) {
   const navigate = useNavigate()
   const { theme, toggleTheme } = useTheme()
@@ -19,7 +16,7 @@ function PaletteBody({ onClose }: PaletteBodyProps) {
   const listRef = useRef<HTMLUListElement>(null)
 
   const commands = useMemo(
-    () => buildCommands({ navItems, projects, profile, theme }),
+    () => buildCommands({ navItems, projects, profile, theme, terminal: features.terminal }),
     [theme],
   )
   const results = useMemo(() => filterCommands(commands, query), [commands, query])

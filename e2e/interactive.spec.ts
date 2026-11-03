@@ -74,7 +74,7 @@ test.describe('theme', () => {
   })
 })
 
-test.describe('terminal', () => {
+test.describe.skip('terminal', () => {
   test('answers typed commands from the site data', async ({ page }) => {
     await page.goto('/')
     const input = page.getByLabel('Type a command')
@@ -128,11 +128,10 @@ test.describe('terminal', () => {
 test.describe('reduced motion', () => {
   test.use({ reducedMotion: 'reduce' })
 
-  test('shows the interests as static text instead of a typing animation', async ({ page }) => {
+  test('keeps the intro minimal, with no typing animation', async ({ page }) => {
     await page.goto('/')
 
-    await expect(
-      page.locator('p', { hasText: 'Currently interested in' }),
-    ).toContainText('·')
+    await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
+    await expect(page.getByText('Currently interested in')).toHaveCount(0)
   })
 })

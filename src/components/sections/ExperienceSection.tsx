@@ -3,25 +3,27 @@ import { formatPeriod } from '../../lib/period'
 import { Badge } from '../ui/Badge'
 import { Section } from '../ui/Section'
 
-/** Experience as a flight log: a glowing line down the page, one node per position. */
+const MAX_BULLETS = 2
+
 export function ExperienceSection() {
   if (experience.length === 0) return null
 
   return (
     <Section id="experience" eyebrow="Experience" title="Where I've worked">
-      <ol className="relative space-y-8 pl-8 before:absolute before:top-3 before:bottom-3 before:left-[0.4rem] before:w-px before:bg-linear-to-b before:from-accent before:via-accent-2 before:to-transparent">
+      <ol className="relative space-y-12 pl-8 before:absolute before:top-3 before:bottom-3 before:left-[0.4rem] before:w-px before:bg-linear-to-b before:from-accent before:via-accent-2 before:to-transparent">
         {experience.map((entry) => {
           const period = formatPeriod(entry.startDate, entry.endDate)
           const meta = [entry.organization, entry.location, entry.employmentType].filter(Boolean)
+          const bullets = entry.responsibilities.slice(0, MAX_BULLETS)
 
           return (
             <li
               key={entry.id}
-              className="relative rounded-xl border border-line bg-surface/60 p-6 backdrop-blur-sm sm:p-8"
+              className="relative rounded-xl border border-line bg-surface/60 p-6 backdrop-blur-sm sm:p-10"
             >
               <span
                 aria-hidden="true"
-                className="absolute top-8 -left-[1.95rem] size-3 rounded-full bg-accent-3 shadow-[0_0_0.9rem_var(--accent-3)] ring-4 ring-background/80"
+                className="absolute top-8 -left-[1.95rem] size-3 rounded-full bg-accent-3 shadow-[0_0_0.9rem_var(--accent-3)] ring-4 ring-background/80 sm:top-12"
               />
 
               {period && (
@@ -29,16 +31,18 @@ export function ExperienceSection() {
                   {period}
                 </p>
               )}
-              <h3 className="mt-3 text-xl font-semibold tracking-tight">{entry.position}</h3>
-              <p className="mt-1 text-sm text-muted">{meta.join(' · ')}</p>
+              <h3 className="mt-4 font-display text-2xl font-semibold tracking-tight text-balance sm:text-3xl">
+                {entry.position}
+              </h3>
+              <p className="mt-2 text-sm text-muted">{meta.join(' · ')}</p>
 
               {entry.description && (
-                <p className="mt-4 max-w-2xl text-muted">{entry.description}</p>
+                <p className="mt-6 max-w-2xl text-lg text-foreground/90">{entry.description}</p>
               )}
 
-              {entry.responsibilities.length > 0 && (
+              {bullets.length > 0 && (
                 <ul className="mt-4 max-w-2xl space-y-2 text-muted">
-                  {entry.responsibilities.map((item) => (
+                  {bullets.map((item) => (
                     <li key={item} className="flex gap-3">
                       <span
                         aria-hidden="true"
@@ -51,7 +55,7 @@ export function ExperienceSection() {
               )}
 
               {entry.technologies.length > 0 && (
-                <ul className="mt-5 flex flex-wrap gap-2" aria-label="Technologies used">
+                <ul className="mt-6 flex flex-wrap gap-2" aria-label="Technologies used">
                   {entry.technologies.map((tech) => (
                     <li key={tech}>
                       <Badge>{tech}</Badge>

@@ -1,11 +1,10 @@
 import type { CSSProperties } from 'react'
 import { ArrowRight, Download } from 'lucide-react'
-import { about, hero, profile } from '../../data/portfolio'
+import { hero, profile } from '../../data/portfolio'
 import { getDisplaySize, splitName } from '../../lib/name'
 import { hasContactDetails } from '../../lib/socialLinks'
 import { ButtonLink } from '../ui/ButtonLink'
 import { Container } from '../ui/Container'
-import { RotatingText } from '../ui/RotatingText'
 import { SectionMarker } from '../ui/SectionMarker'
 import { HeroTelemetry } from './HeroTelemetry'
 
@@ -87,23 +86,16 @@ export function HeroSection() {
               <span aria-hidden="true" className="h-px w-8 shrink-0 bg-accent sm:w-12" />
               {profile.title}
             </p>
-            <p className="animate-fade-up mt-4 text-base text-foreground sm:text-lg" style={stagger(460)}>
+            <p
+              className="animate-fade-up mt-4 max-w-xl text-lg text-muted sm:text-xl"
+              style={stagger(460)}
+            >
               {hero.headline}
             </p>
-            <p
-              className="animate-fade-up mt-3 max-w-xl text-base leading-relaxed text-muted sm:text-lg"
-              style={stagger(520)}
-            >
-              {hero.intro}
-            </p>
-
-            <div className="animate-fade-up mt-6" style={stagger(580)}>
-              <RotatingText prefix="Currently interested in" words={about.interests} />
-            </div>
 
             <div
-              className="animate-fade-up mt-8 grid grid-cols-2 gap-3 sm:flex sm:flex-wrap"
-              style={stagger(640)}
+              className="animate-fade-up mt-10 grid grid-cols-2 gap-3 sm:flex sm:flex-wrap"
+              style={stagger(560)}
             >
               <ButtonLink to="/#projects" className="col-span-2 sm:col-auto">
                 View My Projects

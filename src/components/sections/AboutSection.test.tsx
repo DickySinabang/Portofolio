@@ -47,7 +47,7 @@ describe('AboutSection', () => {
     expect(screen.getByText('The second paragraph.')).toBeInTheDocument()
   })
 
-  it('shows the profile panel with name, role, and education', () => {
+  it('shows the profile panel with name, role, education, and university only', () => {
     render(<AboutSection />)
 
     const panel = within(screen.getByRole('heading', { level: 3, name: 'Profile' }).closest('div')!.parentElement!)
@@ -55,7 +55,10 @@ describe('AboutSection', () => {
     expect(panel.getByText('Test Developer')).toBeInTheDocument()
     expect(panel.getByText('BSc Test')).toBeInTheDocument()
     expect(panel.getByText('Test University')).toBeInTheDocument()
-    expect(panel.getByText('Graduate')).toBeInTheDocument()
+    expect(panel.getByText('Education')).toBeInTheDocument()
+    expect(panel.getByText('University')).toBeInTheDocument()
+    expect(panel.queryByText('Status')).not.toBeInTheDocument()
+    expect(panel.queryByText('Graduate')).not.toBeInTheDocument()
   })
 
   it('shows a photo only when one is provided', () => {
@@ -68,31 +71,29 @@ describe('AboutSection', () => {
     expect(screen.getByRole('img', { name: 'A portrait' })).toHaveAttribute('src', '/me.png')
   })
 
-  it('builds the path from education, experience, and the present', () => {
+    it('builds the career path from education, experience, and career', () => {
     render(<AboutSection />)
 
-    const path = screen.getByRole('heading', { level: 3, name: 'Path' }).parentElement!
+    const path = screen.getByRole('heading', { level: 3, name: 'Career Path' }).parentElement!
     expect(within(path).getAllByRole('listitem')).toHaveLength(3)
     expect(within(path).getByText('Internship')).toBeInTheDocument()
     expect(within(path).getByText('Test Corp')).toBeInTheDocument()
+    expect(within(path).getByText('Career')).toBeInTheDocument()
   })
 
-  it('lists interests and the learning approach', () => {
-    render(<AboutSection />)
-
-    expect(screen.getByRole('heading', { level: 3, name: 'Interests' })).toBeInTheDocument()
-    expect(screen.getByText('Tooling')).toBeInTheDocument()
-    expect(screen.getByRole('heading', { level: 3, name: 'How I approach learning' })).toBeInTheDocument()
-    expect(screen.getByText('Then build.')).toBeInTheDocument()
-  })
-
-  it('hides a panel whose list is empty, and copes with a single paragraph', () => {
-    data.about.interests = []
-    data.about.paragraphs = ['Only one paragraph.']
+    it('no longer shows the interests or learning approach panels', () => {
     render(<AboutSection />)
 
     expect(screen.queryByRole('heading', { level: 3, name: 'Interests' })).not.toBeInTheDocument()
-    expect(screen.getByRole('heading', { level: 3, name: 'How I approach learning' })).toBeInTheDocument()
+    expect(
+      screen.queryByRole('heading', { level: 3, name: 'How I approach learning' }),
+    ).not.toBeInTheDocument()
+  })
+
+  it('copes with a single paragraph', () => {
+    data.about.paragraphs = ['Only one paragraph.']
+    render(<AboutSection />)
+
     expect(screen.getByText('Only one paragraph.')).toBeInTheDocument()
   })
 })

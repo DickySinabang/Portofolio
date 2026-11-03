@@ -1,5 +1,5 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { render, screen } from '@testing-library/react'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { ContactSection } from './ContactSection'
 
 const data = vi.hoisted(() => ({
@@ -7,9 +7,9 @@ const data = vi.hoisted(() => ({
     name: 'Ada Lovelace',
     title: 'Test Developer',
     email: 'ada@example.com',
-    githubUrl: '',
-    linkedinUrl: '',
-    cvUrl: '',
+    githubUrl: 'https://github.com/ada',
+    linkedinUrl: 'https://www.linkedin.com/in/ada',
+    cvUrl: '/cv/ada.pdf',
   },
   contact: { heading: 'Get in touch', message: 'Say hello.' },
 }))
@@ -21,50 +21,45 @@ vi.mock('../../data/portfolio', async (importOriginal) => ({
 
 beforeEach(() => {
   data.profile.email = 'ada@example.com'
-})
-
-function stubClipboard(writeText: () => Promise<void>) {
-  Object.defineProperty(navigator, 'clipboard', { value: { writeText }, configurable: true })
-}
-
-afterEach(() => {
-  // Not vi.unstubAllGlobals(): that would also remove the shared test-setup stubs.
-  Reflect.deleteProperty(navigator, 'clipboard')
+  data.profile.githubUrl = 'https://github.com/ada'
+  data.profile.linkedinUrl = 'https://www.linkedin.com/in/ada'
+  data.profile.cvUrl = '/cv/ada.pdf'
 })
 
 describe('ContactSection', () => {
-  it('shows the message, the email link, and the address as plain text', () => {
+  it('shows the heading and the message', () => {
     render(<ContactSection />)
 
     expect(screen.getByRole('heading', { name: 'Get in touch' })).toBeInTheDocument()
     expect(screen.getByText('Say hello.')).toBeInTheDocument()
-    expect(screen.getByText('ada@example.com')).toBeInTheDocument()
   })
 
-  it('copies the email address and confirms it', async () => {
-    const writeText = vi.fn().mockResolvedValue(undefined)
-    stubClipboard(writeText)
+  it('offers the Email, GitHub, LinkedIn, and Download CV buttons', () => {
     render(<ContactSection />)
 
-    fireEvent.click(screen.getByRole('button', { name: /copy email/i }))
-
-    await waitFor(() => expect(screen.getByText('Copied')).toBeInTheDocument())
-    expect(writeText).toHaveBeenCalledWith('ada@example.com')
+    expect(screen.getByRole('link', { name: 'Email' })).toHaveAttribute('href', 'mailto:ada@example.com')
+    expect(screen.getByRole('link', { name: /GitHub/ })).toHaveAttribute('href', 'https://github.com/ada')
+    expect(screen.getByRole('link', { name: /LinkedIn/ })).toHaveAttribute(
+      'href',
+      'https://www.linkedin.com/in/ada',
+    )
+    const cv = screen.getByRole('link', { name: /Download CV/ })
+    expect(cv).toHaveAttribute('href', '/cv/ada.pdf')
+    expect(cv).toHaveAttribute('download')
   })
 
-  it('stays quiet when the clipboard is not available', async () => {
-    const writeText = vi.fn().mockRejectedValue(new Error('denied'))
-    stubClipboard(writeText)
+  it('does not repeat the email address as text', () => {
     render(<ContactSection />)
 
-    fireEvent.click(screen.getByRole('button', { name: /copy email/i }))
-
-    await waitFor(() => expect(writeText).toHaveBeenCalled())
-    expect(screen.getByText('Copy email')).toBeInTheDocument()
+    expect(screen.queryByText('ada@example.com')).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /copy email/i })).not.toBeInTheDocument()
   })
 
   it('renders nothing when there are no contact details', () => {
     data.profile.email = ''
+    data.profile.githubUrl = ''
+    data.profile.linkedinUrl = ''
+    data.profile.cvUrl = ''
     const { container } = render(<ContactSection />)
 
     expect(container).toBeEmptyDOMElement()

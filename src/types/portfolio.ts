@@ -31,8 +31,8 @@ export type SocialLink = {
 export type HeroContent = {
   /** Short status label, e.g. "Open to opportunities". Leave empty to hide. */
   availability?: string
+  /** One short tagline shown under the job title. */
   headline: string
-  intro: string
 }
 
 export type Education = {

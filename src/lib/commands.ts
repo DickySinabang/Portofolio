@@ -24,6 +24,8 @@ type BuildInput = {
   projects: Project[]
   profile: Profile
   theme: 'light' | 'dark'
+  /** Only offer "Terminal" when that section is shown on the page. */
+  terminal?: boolean
 }
 
 /** Builds the list from real data, so it only contains things that exist. */
@@ -32,6 +34,7 @@ export function buildCommands({
   projects,
   profile,
   theme,
+  terminal = false,
 }: BuildInput): PaletteCommand[] {
   const commands: PaletteCommand[] = []
 
@@ -45,14 +48,16 @@ export function buildCommands({
     })
   }
 
-  commands.push({
-    id: 'section-terminal',
-    label: 'Terminal',
-    group: 'Go to',
-    keywords: 'console commands interactive',
-    action: { type: 'navigate', to: '/#terminal' },
-  })
-
+  if (terminal) {
+    commands.push({
+      id: 'section-terminal',
+      label: 'Terminal',
+      group: 'Go to',
+      keywords: 'console commands interactive',
+      action: { type: 'navigate', to: '/#terminal' },
+    })
+  }
+  
   for (const project of projects) {
     commands.push({
       id: `project-${project.slug}`,

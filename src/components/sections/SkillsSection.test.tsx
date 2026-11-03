@@ -1,5 +1,5 @@
 import { render, screen, within } from '@testing-library/react'
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { SkillsSection } from './SkillsSection'
 
 vi.mock('../../data/portfolio', async (importOriginal) => ({
@@ -11,6 +11,7 @@ vi.mock('../../data/portfolio', async (importOriginal) => ({
       title: 'Backend',
       skills: [
         { name: 'Laravel', status: 'used' },
+        { name: 'REST API development', status: 'used' },
         { name: 'Go', status: 'learning' },
       ],
     },
@@ -18,79 +19,43 @@ vi.mock('../../data/portfolio', async (importOriginal) => ({
 }))
 
 describe('SkillsSection', () => {
-  it('lists every category as a module on a keyboard-scrollable rail', () => {
+  it('shows every technology in one list under the section heading', () => {
     render(<SkillsSection />)
 
-    const rail = screen.getByRole('region', { name: /skill categories/i })
-    expect(rail).toHaveAttribute('tabindex', '0')
-    expect(within(rail).getByRole('heading', { name: 'Frontend' })).toBeInTheDocument()
-    expect(within(rail).getByRole('heading', { name: 'Backend' })).toBeInTheDocument()
-    expect(within(rail).getByText('2 skills')).toBeInTheDocument()
-    expect(within(rail).getByText('1 skill')).toBeInTheDocument()
-  })
-
-  it('marks skills being learned with visible text, and explains the badges', () => {
-    render(<SkillsSection />)
-
-    expect(screen.getByText('Learning')).toBeInTheDocument()
-    expect(screen.getByText(/dashed badges/i)).toBeInTheDocument()
-  })
-
-  it('offers previous and next buttons, with previous disabled at the start', () => {
-    render(<SkillsSection />)
-
-    expect(screen.getByRole('button', { name: 'Previous skills' })).toBeDisabled()
-    expect(screen.getByRole('button', { name: 'Next skills' })).toBeInTheDocument()
-  })
-})
-
-describe('SkillsSection on a wide screen', () => {
-  const realMatchMedia = window.matchMedia
-
-  afterEach(() => {
-    window.matchMedia = realMatchMedia
-  })
-
-  function stubWideScreen() {
-    window.matchMedia = ((query: string) => ({
-      matches: !query.includes('prefers-reduced-motion'),
-      media: query,
-      onchange: null,
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
-      addListener: vi.fn(),
-      removeListener: vi.fn(),
-      dispatchEvent: vi.fn(),
-    })) as typeof window.matchMedia
-  }
-
-  it('pins: a tall section holds a sticky viewport, and the cards need no clicking', () => {
-    stubWideScreen()
-    const { container } = render(<SkillsSection />)
-
-    const section = container.querySelector('section#skills') as HTMLElement
-    expect(section.style.height).toContain('100svh')
-    expect(container.querySelector('.sticky')).not.toBeNull()
-    expect(screen.getByRole('region', { name: /slide sideways as you scroll/i })).toBeInTheDocument()
     expect(screen.getByRole('heading', { level: 2, name: 'Tools and technologies' })).toBeInTheDocument()
-    // The arrows are only extras; there is nothing to scroll yet, so Previous starts disabled.
-    expect(screen.getByRole('button', { name: 'Previous skills' })).toBeDisabled()
+    const list = screen.getByRole('list', { name: 'Technologies' })
+    expect(within(list).getAllByRole('listitem')).toHaveLength(4)
+    for (const label of ['React', 'Laravel', 'REST API', 'Go']) {
+      expect(within(list).getByText(label)).toBeInTheDocument()
+    }
   })
 
-  it('does not pin when the visitor prefers reduced motion', () => {
-    window.matchMedia = ((query: string) => ({
-      matches: true,
-      media: query,
-      onchange: null,
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
-      addListener: vi.fn(),
-      removeListener: vi.fn(),
-      dispatchEvent: vi.fn(),
-    })) as typeof window.matchMedia
+  it('draws an icon for every skill, a brand logo when there is one', () => {
+    render(<SkillsSection />)
+
+    const list = screen.getByRole('list', { name: 'Technologies' })
+    for (const item of within(list).getAllByRole('listitem')) {
+      expect(item.querySelector('svg[aria-hidden="true"]')).not.toBeNull()
+    }
+    const react = within(list).getByText('React').closest('li')!
+    expect(react.querySelector('svg.fill-current path')?.getAttribute('d')).toBeTruthy()
+  })
+
+  it('has no skill counts, legend, or sideways controls', () => {
     const { container } = render(<SkillsSection />)
 
+    expect(screen.queryByText(/\b\d+ skills?\b/)).not.toBeInTheDocument()
+    expect(screen.queryByText(/dashed badges/i)).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Next skills' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('region', { name: /skill categories/i })).not.toBeInTheDocument()
     expect(container.querySelector('.sticky')).toBeNull()
-    expect(screen.getByRole('region', { name: /scrolls sideways/i })).toHaveAttribute('tabindex', '0')
+  })
+
+  it('marks a skill being learned with visible text', () => {
+    render(<SkillsSection />)
+
+    const learning = screen.getAllByText('Learning')
+    expect(learning).toHaveLength(1)
+    expect(learning[0].closest('li')).toHaveTextContent('Go')
   })
 })

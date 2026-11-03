@@ -11,9 +11,8 @@ export function ProfilePanel({ className = '' }: ProfilePanelProps) {
   const { education, photo } = about
   const rows: [string, string][] = [
     ['Role', profile.title],
-    ['Degree', education.degree],
-    ['Institution', education.institution],
-    ['Status', education.status],
+    ['Education', education.degree],
+    ['University', education.institution],
   ]
 
   return (

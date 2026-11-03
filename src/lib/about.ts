@@ -1,3 +1,4 @@
+import { formatPeriod } from './period'
 import type { AboutContent, ExperienceEntry, Profile } from '../types/portfolio'
 
 export type PathNode = {
@@ -5,6 +6,7 @@ export type PathNode = {
   label: string
   title: string
   detail: string
+  period?: string
 }
 
 type PathInput = {
@@ -18,7 +20,7 @@ export function buildPath({ about, experience, profile }: PathInput): PathNode[]
     {
       id: 'education',
       label: 'Education',
-      title: about.education.degree,
+      title: about.education.status,
       detail: about.education.institution,
     },
   ]
@@ -29,14 +31,15 @@ export function buildPath({ about, experience, profile }: PathInput): PathNode[]
       label: entry.employmentType ?? 'Experience',
       title: entry.position,
       detail: entry.organization,
+      period: formatPeriod(entry.startDate, entry.endDate) || undefined,
     })
   }
 
   nodes.push({
-    id: 'now',
-    label: 'Now',
-    title: about.education.status,
-    detail: profile.title,
+    id: 'career',
+    label: 'Career',
+    title: profile.title,
+    detail: 'Present',
   })
 
   return nodes

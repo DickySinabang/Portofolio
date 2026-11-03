@@ -8,6 +8,7 @@ import { SkillsSection } from '../components/sections/SkillsSection'
 import { TerminalSection } from '../components/sections/TerminalSection'
 import { profile, site } from '../data/portfolio'
 import { useDocumentMeta } from '../hooks/useDocumentMeta'
+import { features } from '../lib/features'
 
 export function HomePage() {
   useDocumentMeta({
@@ -23,7 +24,7 @@ export function HomePage() {
       <ExperienceSection />
       <HighlightsSection />
       <ProjectsSection />
-      <TerminalSection />
+      {features.terminal && <TerminalSection />}
       <ContactSection />
     </>
   )

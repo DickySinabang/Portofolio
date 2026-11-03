@@ -1,56 +1,19 @@
-import { useEffect, useState } from 'react'
-import { ArrowUpRight, Check, Copy, Download, Mail } from 'lucide-react'
+import { ArrowUpRight, Download, Mail } from 'lucide-react'
 import { contact, profile } from '../../data/portfolio'
 import { getSocialLinks, hasContactDetails } from '../../lib/socialLinks'
 import { ButtonLink } from '../ui/ButtonLink'
 import { Section } from '../ui/Section'
-
-/** Copies the address to the clipboard; the label switches to "Copied" for two seconds. */
-function CopyEmail({ email }: { email: string }) {
-  const [copied, setCopied] = useState(false)
-
-  useEffect(() => {
-    if (!copied) return
-    const timer = window.setTimeout(() => setCopied(false), 2000)
-    return () => window.clearTimeout(timer)
-  }, [copied])
-
-  async function copy() {
-    try {
-      await navigator.clipboard.writeText(email)
-      setCopied(true)
-    } catch {
-      // No clipboard access (older browser, insecure page): the address is still on screen.
-    }
-  }
-
-  return (
-    <button
-      type="button"
-      onClick={copy}
-      className="inline-flex items-center gap-1.5 rounded-md border border-line bg-surface/70 px-2.5 py-1 text-xs transition-colors hover:border-accent"
-    >
-      {copied ? (
-        <Check aria-hidden="true" className="size-3.5 text-accent-3" />
-      ) : (
-        <Copy aria-hidden="true" className="size-3.5" />
-      )}
-      <span aria-live="polite">{copied ? 'Copied' : 'Copy email'}</span>
-    </button>
-  )
-}
 
 /** The finale: a "transmission" panel with signal rings pulsing outward. */
 export function ContactSection() {
   if (!hasContactDetails(profile)) return null
 
   const links = getSocialLinks(profile)
-  const email = profile.email?.trim()
   const cvUrl = profile.cvUrl?.trim()
 
   return (
     <Section id="contact" eyebrow="Contact" title={contact.heading}>
-      <div className="relative overflow-hidden rounded-2xl border border-line bg-surface/60 p-6 backdrop-blur-sm sm:p-10">
+      <div className="relative overflow-hidden rounded-2xl border border-line bg-surface/60 p-6 backdrop-blur-sm sm:p-14">
         {/* Decorative signal rings, expanding from the corner. */}
         <div
           aria-hidden="true"
@@ -74,11 +37,11 @@ export function ContactSection() {
             Transmission · channel open
           </p>
 
-          <p className="mt-6 max-w-2xl text-lg leading-relaxed text-foreground sm:text-xl">
+          <p className="mt-8 max-w-2xl text-xl leading-relaxed text-foreground sm:text-2xl">
             {contact.message}
           </p>
 
-          <div className="mt-8 flex flex-wrap gap-3">
+          <div className="mt-10 flex flex-wrap gap-3">
             {links.map((link) => (
               <ButtonLink
                 key={link.id}
@@ -99,16 +62,6 @@ export function ContactSection() {
               </ButtonLink>
             )}
           </div>
-
-          {/* Shown as text too, for visitors without a mail app set up. */}
-          {email && (
-            <p className="mt-6 flex flex-wrap items-center gap-3 text-sm text-muted">
-              <span>
-                Email: <span className="font-mono text-foreground">{email}</span>
-              </span>
-              <CopyEmail email={email} />
-            </p>
-          )}
         </div>
       </div>
     </Section>

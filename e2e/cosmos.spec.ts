@@ -48,7 +48,11 @@ test.describe('cosmos hero', () => {
       delete w.WebGLRenderingContext
       delete w.WebGL2RenderingContext
       const original = HTMLCanvasElement.prototype.getContext
-      HTMLCanvasElement.prototype.getContext = function (type: string, ...rest: unknown[]) {
+      HTMLCanvasElement.prototype.getContext = function (
+        this: HTMLCanvasElement,
+        type: string,
+        ...rest: unknown[]
+      ) {
         if (/webgl/i.test(type)) return null
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         return (original as any).call(this, type, ...rest)
@@ -73,58 +77,12 @@ test.describe('cosmos hero', () => {
   })
 })
 
-test.describe('pinned, scroll-driven skills', () => {
-  test('slides the cards sideways as you scroll down, then releases', async ({ page, isMobile }) => {
-    test.skip(isMobile, 'Phones get a touch-scrollable rail instead of the pinned track')
-    await page.goto('/')
-    const state = () =>
-      page.evaluate(() => {
-        const section = document.getElementById('skills')!
-        const track = section.querySelector('[role="region"]') as HTMLElement
-        return {
-          tx: new DOMMatrix(getComputedStyle(track).transform).m41,
-          heading: document.getElementById('skills-heading')!.getBoundingClientRect().top,
-          height: section.getBoundingClientRect().height,
-          top: section.getBoundingClientRect().top + window.scrollY,
-          viewport: window.innerHeight,
-        }
-      })
-    const scrollTo = async (top: number) => {
-      await page.evaluate((y) => window.scrollTo({ top: y, behavior: 'instant' }), top)
-      await page.waitForTimeout(300)
-    }
-
-    // The section measures its cards after it mounts, then grows to hold the pin.
-    await page.waitForFunction(
-      () => document.getElementById('skills')!.getBoundingClientRect().height > window.innerHeight + 300,
-    )
-    const start = await state()
-    const travel = start.height - start.viewport
-    expect(travel).toBeGreaterThan(300) // the section is taller than the screen: that is the pin
-
-    await scrollTo(start.top)
-    const pinned = await state()
-    await scrollTo(start.top + travel / 2)
-    const half = await state()
-    await scrollTo(start.top + travel)
-    const end = await state()
-
-    expect(pinned.tx).toBeCloseTo(0, 0)
-    expect(half.tx).toBeCloseTo(-travel / 2, -1) // progress follows the vertical scroll exactly
-    expect(end.tx).toBeCloseTo(-travel, -1)
-    expect(half.heading).toBeCloseTo(pinned.heading, 0) // the heading stays put while pinned
-
-    await scrollTo(start.top + travel + 400) // past the last card: released, the page moves on
-    const released = await state()
-    expect(released.heading).toBeLessThan(end.heading - 300)
-
-    await scrollTo(start.top + travel / 2) // and back up, to the same place
-    expect((await state()).tx).toBeCloseTo(half.tx, 0)
-  })
-
-  test('the page never scrolls sideways', async ({ page }) => {
+test.describe('skills', () => {
+  test('shows the technologies in a grid and never scrolls sideways', async ({ page }) => {
     await page.goto('/')
     await page.evaluate(() => document.getElementById('skills')!.scrollIntoView({ behavior: 'instant' }))
+
+    await expect(page.getByRole('list', { name: 'Technologies' })).toBeVisible()
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
   })
 })

@@ -11,7 +11,7 @@ export function AboutPath({ nodes, className = '' }: AboutPathProps) {
 
   return (
     <Reveal className={`group/path ${className}`}>
-      <h3 className="font-mono text-xs tracking-[0.18em] text-muted uppercase">Path</h3>
+      <h3 className="font-mono text-xs tracking-[0.18em] text-muted uppercase">Career Path</h3>
 
       <ol className="relative mt-8 grid gap-8 md:grid-flow-col md:auto-cols-fr md:gap-6">
         {/* The connecting line: vertical on phones, horizontal from md up. */}
@@ -39,8 +39,13 @@ export function AboutPath({ nodes, className = '' }: AboutPathProps) {
               <p className="font-mono text-xs tracking-[0.14em] text-accent uppercase">
                 {node.label}
               </p>
-              <p className="mt-1.5 font-display text-lg font-semibold tracking-tight">{node.title}</p>
-              <p className="mt-0.5 text-sm text-muted">{node.detail}</p>
+              <p className="mt-1.5 font-display text-xl font-semibold tracking-tight sm:text-2xl">
+                {node.title}
+              </p>
+              <p className="mt-1 text-sm text-muted">{node.detail}</p>
+              {node.period && (
+                <p className="mt-1 font-mono text-xs tracking-[0.1em] text-muted/80">{node.period}</p>
+              )}
             </li>
           )
         })}

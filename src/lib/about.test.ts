@@ -3,13 +3,23 @@ import { testAbout, testExperience, testProfile } from '../test/fixtures'
 import { buildPath } from './about'
 
 describe('buildPath', () => {
-  it('goes from education, through experience, to the present', () => {
+  it('goes from education, through experience, to career', () => {
     const path = buildPath({ about: testAbout, experience: testExperience, profile: testProfile })
 
-    expect(path.map((node) => node.label)).toEqual(['Education', 'Experience', 'Now'])
-    expect(path[0]).toMatchObject({ title: 'BSc Test', detail: 'Test University' })
-    expect(path[1]).toMatchObject({ title: 'Intern', detail: 'Test Corp' })
-    expect(path[2]).toMatchObject({ title: 'Graduate', detail: 'Test Developer' })
+    expect(path.map((node) => node.label)).toEqual(['Education', 'Experience', 'Career'])
+    expect(path[0]).toMatchObject({ title: 'Graduate', detail: 'Test University' })
+    expect(path[1]).toMatchObject({
+      title: 'Intern',
+      detail: 'Test Corp',
+      period: 'Jan 2025 – Jun 2025',
+    })
+    expect(path[2]).toMatchObject({ title: 'Test Developer', detail: 'Present' })
+  })
+
+  it('does not repeat the degree from the About card', () => {
+    const path = buildPath({ about: testAbout, experience: testExperience, profile: testProfile })
+
+    expect(path.some((node) => node.title === 'BSc Test')).toBe(false)
   })
 
   it('uses the employment type as the label when there is one', () => {
@@ -22,7 +32,7 @@ describe('buildPath', () => {
   it('still works with no experience at all', () => {
     const path = buildPath({ about: testAbout, experience: [], profile: testProfile })
 
-    expect(path.map((node) => node.id)).toEqual(['education', 'now'])
+    expect(path.map((node) => node.id)).toEqual(['education', 'career'])
   })
 
   it('includes every experience entry, in the listed order', () => {
@@ -32,6 +42,11 @@ describe('buildPath', () => {
     ]
     const path = buildPath({ about: testAbout, experience, profile: testProfile })
 
-    expect(path.map((node) => node.title)).toEqual(['BSc Test', 'First role', 'Second role', 'Graduate'])
+    expect(path.map((node) => node.title)).toEqual([
+      'Graduate',
+      'First role',
+      'Second role',
+      'Test Developer',
+    ])
   })
 })

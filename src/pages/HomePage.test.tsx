@@ -15,6 +15,13 @@ function renderHome() {
 }
 
 describe('HomePage', () => {
+  it('does not show the terminal section on the main page', () => {
+    const { container } = renderHome()
+
+    expect(container.querySelector('#terminal')).toBeNull()
+    expect(container).not.toHaveTextContent('Ask my portfolio')
+  })
+
   it('never contains two elements with the same id', () => {
     const { container } = renderHome()
 

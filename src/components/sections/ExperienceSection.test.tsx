@@ -42,4 +42,14 @@ describe('ExperienceSection', () => {
 
     expect(container).toBeEmptyDOMElement()
   })
+
+    it('shows at most two bullets per position', () => {
+    data.experience[0].responsibilities = ['Wrote code', 'Fixed bugs', 'Reviewed pull requests']
+    render(<ExperienceSection />)
+
+    const entry = screen.getByRole('heading', { name: 'Developer Intern' }).closest('li')!
+    expect(within(entry).getByText('Wrote code')).toBeInTheDocument()
+    expect(within(entry).getByText('Fixed bugs')).toBeInTheDocument()
+    expect(within(entry).queryByText('Reviewed pull requests')).not.toBeInTheDocument()
+  })
 })

@@ -22,7 +22,7 @@ export const site: SiteConfig = {
 
 export const profile: Profile = {
   name: 'Dicky Latare Tricaesar Sinabang',
-  title: 'Full-Stack Developer',
+  title: 'FullStack Developer',
   email: 'dickysinabang@gmail.com',
   githubUrl: 'https://github.com/DickySinabang',
   linkedinUrl: 'https://www.linkedin.com/in/dickylatare766',
@@ -30,15 +30,12 @@ export const profile: Profile = {
 }
 
 export const hero: HeroContent = {
-  headline: 'Building Thoughtful Digital Experiences.',
-  intro:
-    "I'm an Information Technology graduate interested in building practical web applications and exploring technologies that solve real-world problems.",
+  headline: 'Building digital experiences through code.',
 }
 
 export const about: AboutContent = {
   paragraphs: [
-    "I recently graduated with a Bachelor's degree in Information Technology from Telkom University. My interests center on full-stack and back-end web development, with a growing curiosity about mobile applications, the Internet of Things, and machine learning.",
-    'As a Full-Stack Developer Intern at PT Karya Multi Solution Indonesia, I worked on an IoT-based smart building monitoring project. My work used web technologies and databases to support monitoring and dashboard features, and included sensor integration activities.',
+    'Information Technology graduate focused on fullstack and backend web development.',
   ],
   education: {
     degree: "Bachelor's Degree in Information Technology",
@@ -122,40 +119,25 @@ export const skillCategories: SkillCategory[] = [
   },
 ]
 
-/**
- * Experience. Replace the bracketed values with the real ones. To add another
- * position, copy the whole object below and paste it after it (with a comma).
- */
 export const experience: ExperienceEntry[] = [
   {
     id: 'karya-multi-solution-intern',
     position: 'FullStack Developer Intern',
     organization: 'PT Karya Multi Solution Indonesia',
     employmentType: 'Internship',
-    location: '[Bogor, Indonesia]',
-    startDate: '[June 2025]',
-    endDate: '[Aug 2025]',
-    description: 'Worked on an IoT-based smart building monitoring project.',
+    location: 'Bogor, Indonesia',
+    startDate: 'Jun 2025',
+    endDate: 'Aug 2025',
+    description: 'IoT-based smart building monitoring project.',
     responsibilities: [
-      'Used web technologies and databases to support monitoring and dashboard functionality.',
-      'Participated in IoT development and sensor integration activities.',
+      'Built monitoring and dashboard features using web technologies and databases.',
+      'Worked on IoT development and sensor integration.',
     ],
     // List only technologies you really used during this internship.
-    technologies: ['[PHP]', '[C++]'],
+    technologies: ['PHP', 'IoT', 'C++'],
   },
 ]
 
-/**
- * Projects. The object below is a complete template. To add a project, copy
- * the whole object, paste it after the last one (with a comma), and fill it in.
- *
- *  - slug: unique, lowercase, letters/numbers/hyphens. It becomes /projects/<slug>.
- *  - category: 'web' | 'backend' | 'mobile' | 'iot' | 'machine-learning'
- *  - Screenshots: put image files in public/images/projects/ and reference them
- *    as '/images/projects/your-file.png'.
- *  - Delete any optional line you have no real answer for. Only keep githubUrl
- *    and liveDemoUrl if the link really works.
- */
 export const projects: Project[] = [
   {
     slug: 'your-project-name',
@@ -206,8 +188,7 @@ export const highlights: Highlight[] = [
 export const contact: ContactContent = {
   heading: "Let's connect",
   // Edit this so it sounds like you.
-  message:
-    "If you'd like to talk about a project, an opportunity, or web development in general, feel free to reach out.",
+  message: 'Have a project or an opportunity in mind? Let’s talk.',
 }
 
 const allNavItems: NavItem[] = [

@@ -22,12 +22,16 @@ describe('buildCommands', () => {
     expect(build().map((command) => command.id)).toEqual([
       'section-home',
       'section-projects',
-      'section-terminal',
       'project-full-project',
       'link-email',
       'link-github',
       'action-theme',
     ])
+  })
+
+  it('offers the Terminal command only when the terminal section is shown', () => {
+    expect(build({ terminal: true }).map((command) => command.id)).toContain('section-terminal')
+    expect(build().map((command) => command.id)).not.toContain('section-terminal')
   })
 
   it('creates the right action for each kind of command', () => {

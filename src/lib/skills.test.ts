@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { SkillCategory } from '../types/portfolio'
-import { pickUsedSkills } from './skills'
+import { getAllSkills, pickUsedSkills } from './skills'
 
 const categories: SkillCategory[] = [
   {
@@ -29,5 +29,25 @@ describe('pickUsedSkills', () => {
   it('respects the limit and handles no categories', () => {
     expect(pickUsedSkills(categories, 1)).toEqual(['PHP'])
     expect(pickUsedSkills([], 5)).toEqual([])
+  })
+
+  describe('getAllSkills', () => {
+  it('flattens the categories in order and drops empty ones', () => {
+    expect(getAllSkills(categories).map((skill) => skill.name)).toEqual([
+      'PHP',
+      'Python',
+      'Rust',
+      'MySQL',
+      'Machine learning',
+    ])
+  })
+    it('lists a repeated skill only once', () => {
+      const repeated: SkillCategory[] = [
+        { id: 'a', title: 'A', skills: [{ name: 'Git', status: 'used' }] },
+        { id: 'b', title: 'B', skills: [{ name: 'git', status: 'used' }] },
+      ]
+
+      expect(getAllSkills(repeated)).toHaveLength(1)
+    })
   })
 })
