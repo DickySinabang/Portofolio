@@ -183,7 +183,7 @@ export function Navbar({ onOpenPalette }: NavbarProps) {
         className="animate-fade-up fixed inset-0 overflow-y-auto bg-background/95 backdrop-blur-xl md:hidden"
       >
         <div className="flex flex-col px-6 pt-28 pb-16">
-          {navItems.map((item, index) => {
+          {navItems.map((item) => {
             const active = item.sectionId === activeId
             return (
               <Link
