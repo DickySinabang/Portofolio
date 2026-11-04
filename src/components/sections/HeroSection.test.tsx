@@ -70,26 +70,21 @@ describe('HeroSection', () => {
     renderHero()
 
     expect(screen.queryByRole('link', { name: 'Contact Me' })).not.toBeInTheDocument()
-    expect(screen.queryByRole('link', { name: /Download CV/ })).not.toBeInTheDocument()
     expect(screen.queryByText('Open to opportunities')).not.toBeInTheDocument()
   })
 
-  it('shows contact, CV, and availability when they exist', () => {
+  it('shows contact and availability when they exist, but never the CV', () => {
     data.profile.email = 'ada@example.com'
     data.profile.cvUrl = '/cv/ada.pdf'
     data.hero.availability = 'Open to opportunities'
     renderHero()
 
     expect(screen.getByRole('link', { name: 'Contact Me' })).toHaveAttribute('href', '/#contact')
-
-    const cv = screen.getByRole('link', { name: /Download CV/ })
-    expect(cv).toHaveAttribute('href', '/cv/ada.pdf')
-    expect(cv).toHaveAttribute('download')
-
     expect(screen.getByText('Open to opportunities')).toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: /Download CV/ })).not.toBeInTheDocument()
   })
 
-  it('offers exactly three buttons, and no social links', () => {
+  it('offers exactly two buttons, and no social links or intro label', () => {
     data.profile.email = 'ada@example.com'
     data.profile.githubUrl = 'https://github.com/ada'
     data.profile.linkedinUrl = 'https://www.linkedin.com/in/ada'
@@ -99,10 +94,10 @@ describe('HeroSection', () => {
     expect(screen.getAllByRole('link').map((link) => link.textContent?.trim())).toEqual([
       'View My Projects',
       'Contact Me',
-      'Download CV',
     ])
     expect(screen.queryByRole('link', { name: /GitHub|LinkedIn/ })).not.toBeInTheDocument()
     expect(container.querySelector('a[href^="mailto:"]')).toBeNull()
+    expect(container).not.toHaveTextContent('Intro')
   })
 
   it('no longer shows the developer.ts code card', () => {

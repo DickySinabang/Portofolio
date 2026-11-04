@@ -36,4 +36,10 @@ describe('HomePage', () => {
     expect(container).not.toHaveTextContent('Placeholder section')
     expect(container.querySelectorAll('[id=contact]').length).toBeLessThanOrEqual(1)
   })
+  
+  it('does not show the highlights section on the main page', () => {
+    const { container } = renderHome()
+
+    expect(container).not.toHaveTextContent('Learning highlights')
+  })
 })

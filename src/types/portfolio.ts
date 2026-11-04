@@ -42,11 +42,11 @@ export type Education = {
 }
 
 export type AboutContent = {
+  headline?: [string, string]
   paragraphs: string[]
   education: Education
   interests: string[]
   approach: string[]
-  /** Optional profile photo. Omit to hide the photo. */
   photo?: {
     src: string
     alt: string
@@ -62,9 +62,10 @@ export type Skill = {
 }
 
 export type SkillCategory = {
-  /** Also selects the icon, see SkillsSection. */
   id: string
   title: string
+  label?: string
+  description?: string
   skills: Skill[]
 }
 

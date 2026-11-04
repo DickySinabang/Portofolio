@@ -82,7 +82,7 @@ test.describe('skills', () => {
     await page.goto('/')
     await page.evaluate(() => document.getElementById('skills')!.scrollIntoView({ behavior: 'instant' }))
 
-    await expect(page.getByRole('list', { name: 'Technologies' })).toBeVisible()
+    await expect(page.getByRole('heading', { level: 3, name: 'Frontend Development' })).toBeVisible()
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
   })
 })

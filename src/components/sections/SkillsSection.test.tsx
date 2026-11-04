@@ -5,50 +5,68 @@ import { SkillsSection } from './SkillsSection'
 vi.mock('../../data/portfolio', async (importOriginal) => ({
   ...(await importOriginal<typeof import('../../data/portfolio')>()),
   skillCategories: [
-    { id: 'frontend', title: 'Frontend', skills: [{ name: 'React', status: 'used' }] },
+    {
+      id: 'frontend',
+      title: 'Frontend Development',
+      label: 'Interface',
+      description: 'Building web interfaces.',
+      skills: [
+        { name: 'React', status: 'used' },
+        { name: 'Tailwind CSS', status: 'used' },
+      ],
+    },
     {
       id: 'backend',
-      title: 'Backend',
+      title: 'Backend Development',
       skills: [
         { name: 'Laravel', status: 'used' },
         { name: 'REST API development', status: 'used' },
         { name: 'Go', status: 'learning' },
       ],
     },
+    { id: 'extra', title: 'Something Else', skills: [{ name: 'Rust', status: 'used' }] },
+    { id: 'empty', title: 'Empty', skills: [] },
   ],
 }))
 
 describe('SkillsSection', () => {
-  it('shows every technology in one list under the section heading', () => {
+  it('shows one card per category and hides empty ones', () => {
     render(<SkillsSection />)
 
     expect(screen.getByRole('heading', { level: 2, name: 'Tools and technologies' })).toBeInTheDocument()
-    const list = screen.getByRole('list', { name: 'Technologies' })
-    expect(within(list).getAllByRole('listitem')).toHaveLength(4)
-    for (const label of ['React', 'Laravel', 'REST API', 'Go']) {
-      expect(within(list).getByText(label)).toBeInTheDocument()
-    }
+    expect(screen.getAllByRole('heading', { level: 3 }).map((h) => h.textContent)).toEqual([
+      'Frontend Development',
+      'Backend Development',
+      'Something Else',
+    ])
   })
 
-  it('draws an icon for every skill, a brand logo when there is one', () => {
+  it('shows the label and the short description on a card', () => {
     render(<SkillsSection />)
 
-    const list = screen.getByRole('list', { name: 'Technologies' })
-    for (const item of within(list).getAllByRole('listitem')) {
-      expect(item.querySelector('svg[aria-hidden="true"]')).not.toBeNull()
-    }
-    const react = within(list).getByText('React').closest('li')!
-    expect(react.querySelector('svg.fill-current path')?.getAttribute('d')).toBeTruthy()
+    expect(screen.getByText('Interface')).toBeInTheDocument()
+    expect(screen.getByText('Building web interfaces.')).toBeInTheDocument()
   })
 
-  it('has no skill counts, legend, or sideways controls', () => {
-    const { container } = render(<SkillsSection />)
+  it('lists the technologies of each category as badges', () => {
+    render(<SkillsSection />)
 
-    expect(screen.queryByText(/\b\d+ skills?\b/)).not.toBeInTheDocument()
-    expect(screen.queryByText(/dashed badges/i)).not.toBeInTheDocument()
-    expect(screen.queryByRole('button', { name: 'Next skills' })).not.toBeInTheDocument()
-    expect(screen.queryByRole('region', { name: /skill categories/i })).not.toBeInTheDocument()
-    expect(container.querySelector('.sticky')).toBeNull()
+    const frontend = screen.getByRole('list', { name: 'Frontend Development technologies' })
+    expect(within(frontend).getByText('React')).toBeInTheDocument()
+    expect(within(frontend).getByText('Tailwind CSS')).toBeInTheDocument()
+    const backend = screen.getByRole('list', { name: 'Backend Development technologies' })
+    expect(within(backend).getByText('REST API')).toBeInTheDocument()
+  })
+
+  it('draws an icon for every badge, a brand logo when there is one', () => {
+    render(<SkillsSection />)
+
+    const frontend = screen.getByRole('list', { name: 'Frontend Development technologies' })
+    for (const item of within(frontend).getAllByRole('listitem')) {
+      expect(item.querySelector('svg[aria-hidden="true"]')).not.toBeNull()
+    }
+    const react = within(frontend).getByText('React').closest('li')!
+    expect(react.querySelector('svg.fill-current path')?.getAttribute('d')).toBeTruthy()
   })
 
   it('marks a skill being learned with visible text', () => {
@@ -57,5 +75,14 @@ describe('SkillsSection', () => {
     const learning = screen.getAllByText('Learning')
     expect(learning).toHaveLength(1)
     expect(learning[0].closest('li')).toHaveTextContent('Go')
+  })
+
+  it('is a plain grid, with no carousel, counts, or pinned track', () => {
+    const { container } = render(<SkillsSection />)
+
+    expect(screen.queryByRole('region', { name: /skill categories/i })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /skills/i })).not.toBeInTheDocument()
+    expect(screen.queryByText(/\b\d+ skills?\b/)).not.toBeInTheDocument()
+    expect(container.querySelector('.sticky')).toBeNull()
   })
 })

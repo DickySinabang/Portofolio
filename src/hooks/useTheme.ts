@@ -17,8 +17,20 @@ function getTheme(): Theme {
   return document.documentElement.classList.contains('dark') ? 'dark' : 'light'
 }
 
+// Colours of the browser bar on phones; they match each theme's --bg.
+const THEME_COLORS: Record<Theme, string> = { dark: '#02040b', light: '#cfd8fa' }
+
+let transitionTimer: number | undefined
+
 function applyTheme(theme: Theme) {
-  document.documentElement.classList.toggle('dark', theme === 'dark')
+  const root = document.documentElement
+  // Let colours glide for a moment instead of jumping.
+  root.classList.add('theme-transition')
+  window.clearTimeout(transitionTimer)
+  transitionTimer = window.setTimeout(() => root.classList.remove('theme-transition'), 700)
+
+  root.classList.toggle('dark', theme === 'dark')
+  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', THEME_COLORS[theme])
   try {
     localStorage.setItem(STORAGE_KEY, theme)
   } catch {

@@ -2,24 +2,30 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
+  /* LIGHT = "Dawn Orbit": the same cosmos seen at sunrise. Never plain white: the page is a
+     periwinkle-to-orchid sky, cards are frosted glass, text is deep navy. */
   color-scheme: light;
-  --bg: #eef1fb;
-  --fg: #0a1020;
-  --muted: #4a5675;
-  --surface: #ffffff;
-  --line: #d3dbee;
-  --accent: #3347c9; /* cosmic blue, the primary accent */
-  --accent-2: #6340c9; /* violet, the secondary accent */
-  --accent-3: #0b7088; /* cyan, used sparingly for live/status details */
+  --bg: #cfd8fa;
+  --fg: #0c1330;
+  --muted: #3c4770;
+  --surface: #f1f3ff;
+  --line: #a3b0e3;
+  --accent: #2f43c4; /* cosmic blue, the primary accent */
+  --accent-2: #6a3fd0; /* violet, the secondary accent */
+  --accent-3: #08607a; /* cyan, used sparingly for live/status details */
   --accent-fg: #ffffff; /* text on top of --accent */
-  --star: #4a5bd0; /* star color, read by ParticleField */
-  --nebula-a: #7c93ff;
-  --nebula-b: #b197ff;
-  --nebula-c: #5ee7ff;
-  --nebula-opacity: 0.16;
+  --star: #3a48b8; /* star color, read by ParticleField */
+  --nebula-a: #8fa4ff;
+  --nebula-b: #c3a3ff;
+  --nebula-c: #7fe3ff;
+  --nebula-opacity: 0.55;
+  --orb-opacity: 0.55; /* the floating glow orbs */
+  --planet-opacity: 0.8; /* the Earth sits a little softer in the daylight sky */
+  --veil: color-mix(in srgb, var(--bg) 42%, transparent); /* keeps text readable over the planet */
 }
 
 .dark {
+  /* DARK = deep space at night. */
   color-scheme: dark;
   --bg: #02040b;
   --fg: #e8ecf8;
@@ -35,6 +41,9 @@
   --nebula-b: #7a3fd0;
   --nebula-c: #1b8fb8;
   --nebula-opacity: 0.42;
+  --orb-opacity: 0.2;
+  --planet-opacity: 1;
+  --veil: transparent;
 }
 
 @theme inline {
@@ -50,6 +59,8 @@
 
   --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Space Grotesk Variable", "Inter Variable", ui-sans-serif, system-ui,
+    sans-serif;
+  --font-hero: "Montserrat Variable", "Space Grotesk Variable", ui-sans-serif, system-ui,
     sans-serif;
   --font-mono: "JetBrains Mono Variable", ui-monospace, "Cascadia Code", "Consolas",
     monospace;
@@ -146,9 +157,34 @@
 }
 
 /* ---------- Stage 2: hero and navigation ---------- */
+@utility scrim-center {
+  background: radial-gradient(
+    ellipse 70% 60% at 50% 48%,
+    color-mix(in srgb, var(--bg) 78%, transparent),
+    transparent 75%
+  );
+}
 
-/* Editorial display sizes for the hero name. A long name steps down a size
-   instead of overflowing (see lib/name.ts). */
+@utility text-hero-name {
+  font-family: var(--font-hero);
+  font-size: clamp(1.35rem, 4.8vw, 4.25rem);
+  font-weight: 300;
+  line-height: 1.2;
+  letter-spacing: 0.2em;
+  padding-left: 0.2em;
+  text-transform: uppercase;
+}
+
+@utility text-hero-eyebrow {
+  font-family: var(--font-hero);
+  font-size: clamp(0.7rem, 1.4vw, 0.9rem);
+  font-weight: 400;
+  line-height: 1.6;
+  letter-spacing: 0.5em;
+  padding-left: 0.5em;
+  text-transform: uppercase;
+}
+
 @utility text-display-xl {
   font-family: var(--font-display);
   font-size: clamp(3rem, 16vw, 9.5rem);
@@ -338,4 +374,150 @@
   border-radius: 9999px;
   border: 1px solid var(--accent-3);
   animation: transmit 6s ease-out infinite;
+}
+
+/* ---------- Light and dark: the sky, glow orbs and the theme switch ---------- */
+
+/* The light theme's dawn sky. It is always there and simply fades out in dark mode. */
+.sky {
+  position: absolute;
+  inset: 0;
+  opacity: 1;
+  background:
+    radial-gradient(ellipse 70% 50% at 82% 6%, rgb(255 240 252 / 0.85), transparent 62%),
+    radial-gradient(ellipse 60% 45% at 8% 92%, rgb(190 170 255 / 0.4), transparent 65%),
+    linear-gradient(180deg, #b9c7fa 0%, #cfd2fa 46%, #e4d8f6 100%);
+  transition: opacity 0.6s ease;
+}
+
+.dark .sky {
+  opacity: 0;
+}
+
+/* Big soft balls of light that float slowly. Gradients instead of blur keep them cheap. */
+.glow-orb {
+  position: absolute;
+  border-radius: 9999px;
+  opacity: var(--orb-opacity);
+  background: radial-gradient(closest-side, var(--orb-tint), transparent);
+  animation: float 16s ease-in-out infinite;
+}
+
+/* The Earth layer: softened a little in light mode. */
+.planet-layer {
+  position: absolute;
+  inset: 0;
+  opacity: var(--planet-opacity);
+  transition: opacity 0.6s ease;
+}
+
+/* While the theme is switching, colours glide instead of jumping. */
+.theme-transition,
+.theme-transition *,
+.theme-transition ::before,
+.theme-transition ::after {
+  transition-property: background-color, border-color, color, fill, stroke, box-shadow, opacity !important;
+  transition-duration: 0.6s !important;
+  transition-timing-function: ease !important;
+}
+
+/* ---------- Skills: every tile glows in its own technology's colour ---------- */
+
+.skill-tile {
+  /* --brand is set per tile from the technology's brand colour; without one, the accent is used. */
+  --brand-ink: color-mix(in srgb, var(--brand, var(--accent)) 62%, var(--fg));
+  transition:
+    transform 0.3s ease,
+    border-color 0.3s ease,
+    background-color 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.dark .skill-tile {
+  --brand-ink: color-mix(in srgb, var(--brand, var(--accent)) 88%, white);
+}
+
+.skill-tile:hover,
+.skill-tile:focus-within {
+  transform: translateY(-4px);
+  border-color: color-mix(in srgb, var(--brand, var(--accent)) 60%, transparent);
+  background-color: color-mix(in srgb, var(--brand, var(--accent)) 10%, var(--surface));
+  box-shadow:
+    0 1.1rem 2.2rem -1rem color-mix(in srgb, var(--brand, var(--accent)) 70%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--brand, var(--accent)) 25%, transparent);
+}
+
+.skill-icon {
+  transition:
+    color 0.3s ease,
+    transform 0.3s ease;
+}
+
+.skill-tile:hover .skill-icon,
+.skill-tile:focus-within .skill-icon {
+  color: var(--brand-ink);
+  transform: scale(1.12);
+}
+
+/* ---------- About: the large portrait ---------- */
+
+/* A slow, gentle float. Much smaller than .animate-float, so the face never feels restless. */
+@keyframes portrait-float {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(0, -10px, 0);
+  }
+}
+
+.portrait-float {
+  animation: portrait-float 9s ease-in-out infinite;
+}
+
+.portrait-backdrop {
+  background:
+    radial-gradient(
+      ellipse 75% 50% at 50% 32%,
+      color-mix(in srgb, var(--accent) 40%, transparent),
+      transparent 72%
+    ),
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--accent-2) 42%, var(--bg)) 0%,
+      color-mix(in srgb, var(--accent) 28%, var(--bg)) 60%,
+      var(--bg) 100%
+    );
+}
+
+/* ---------- Skills: the small technology chips inside each category card ---------- */
+
+.skill-chip {
+  /* --brand is the technology's brand colour; without one, the accent is used. */
+  --brand-ink: color-mix(in srgb, var(--brand, var(--accent)) 62%, var(--fg));
+  transition:
+    transform 0.25s ease,
+    border-color 0.25s ease,
+    background-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.dark .skill-chip {
+  --brand-ink: color-mix(in srgb, var(--brand, var(--accent)) 88%, white);
+}
+
+.skill-chip:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--brand, var(--accent)) 60%, transparent);
+  background-color: color-mix(in srgb, var(--brand, var(--accent)) 12%, var(--surface));
+  box-shadow: 0 0.6rem 1.2rem -0.7rem color-mix(in srgb, var(--brand, var(--accent)) 75%, transparent);
+}
+
+.skill-chip-icon {
+  transition: color 0.25s ease;
+}
+
+.skill-chip:hover .skill-chip-icon {
+  color: var(--brand-ink);
 }

@@ -22,7 +22,7 @@ export function HomePage() {
       <AboutSection />
       <SkillsSection />
       <ExperienceSection />
-      <HighlightsSection />
+      {features.highlights && <HighlightsSection />}
       <ProjectsSection />
       {features.terminal && <TerminalSection />}
       <ContactSection />

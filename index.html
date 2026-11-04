@@ -33,6 +33,7 @@
           var stored = localStorage.getItem('theme');
           var theme = stored || 'dark';
           if (theme === 'dark') document.documentElement.classList.add('dark');
+          else document.querySelector('meta[name="theme-color"]').setAttribute('content', '#cfd8fa');
         } catch (e) {}
       })();
     </script>

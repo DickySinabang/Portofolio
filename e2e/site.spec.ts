@@ -79,7 +79,7 @@ test.describe('navigation', () => {
     await primary.getByRole('link', { name: 'About' }).click()
 
     await expect(page).toHaveURL(/\/#about$/)
-    await expect(page.getByRole('heading', { name: 'A little about me' })).toBeInViewport()
+    await expect(page.getByRole('heading', { name: /Turning ideas/ })).toBeInViewport()
     await expect(primary.getByRole('link', { name: 'About' })).toHaveAttribute(
       'aria-current',
       'location',

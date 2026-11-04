@@ -7,6 +7,7 @@ import { Footer } from './Footer'
 import { Navbar } from './Navbar'
 import { ScrollToHash } from './ScrollToHash'
 import { SectionRail } from './SectionRail'
+import { features } from '../../lib/features'
 
 export function Layout() {
   const [paletteOpen, setPaletteOpen] = useState(false)
@@ -27,7 +28,7 @@ export function Layout() {
       <Cosmos />
       <ScrollToHash />
       <ScrollProgress />
-      <SectionRail />
+      {features.sectionRail && <SectionRail />}
       <a
         href="#main-content"
         className="sr-only rounded-lg bg-accent px-4 py-2 text-sm font-medium text-accent-fg focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50"

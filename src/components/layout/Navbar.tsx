@@ -8,7 +8,6 @@ import { Container } from '../ui/Container'
 import { ThemeToggle } from '../ui/ThemeToggle'
 
 const sectionIds = navItems.map((item) => item.sectionId)
-const pad = (index: number) => String(index + 1).padStart(2, '0')
 
 type NavbarProps = {
   onOpenPalette: () => void
@@ -124,7 +123,7 @@ export function Navbar({ onOpenPalette }: NavbarProps) {
               aria-hidden="true"
               className="pointer-events-none absolute top-1/2 left-0 h-9 -translate-y-1/2 rounded-full border border-accent/30 bg-accent/10 opacity-0 transition-[transform,width,opacity] duration-300 ease-out"
             />
-            {navItems.map((item, index) => {
+            {navItems.map((item) => {
               const active = item.sectionId === activeId
               return (
                 <Link
@@ -136,12 +135,6 @@ export function Navbar({ onOpenPalette }: NavbarProps) {
                     active ? 'font-medium text-foreground' : 'text-muted hover:text-foreground'
                   }`}
                 >
-                  <span
-                    aria-hidden="true"
-                    className="hidden font-mono text-[10px] text-accent xl:inline"
-                  >
-                    {pad(index)}
-                  </span>
                   {item.label}
                 </Link>
               )
@@ -202,9 +195,6 @@ export function Navbar({ onOpenPalette }: NavbarProps) {
                   active ? 'text-foreground' : 'text-muted hover:text-foreground'
                 }`}
               >
-                <span aria-hidden="true" className="font-mono text-xs text-accent">
-                  {pad(index)}
-                </span>
                 {item.label}
               </Link>
             )

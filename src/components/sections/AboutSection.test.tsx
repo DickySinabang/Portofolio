@@ -4,12 +4,9 @@ import { AboutSection } from './AboutSection'
 
 // Fixed test data, so these tests never depend on your real content.
 const data = vi.hoisted(() => ({
-  navItems: [
-    { label: 'Home', sectionId: 'home' },
-    { label: 'About', sectionId: 'about' },
-  ],
   profile: { name: 'Ada Lovelace', title: 'Test Developer' },
   about: {
+    headline: ['Turning ideas', 'into reality.'] as [string, string] | undefined,
     paragraphs: ['The lead paragraph.', 'The second paragraph.'],
     education: { degree: 'BSc Test', institution: 'Test University', status: 'Graduate' },
     interests: ['Testing', 'Tooling'],
@@ -31,69 +28,73 @@ const data = vi.hoisted(() => ({
 vi.mock('../../data/portfolio', () => data)
 
 beforeEach(() => {
+  data.about.headline = ['Turning ideas', 'into reality.']
   data.about.paragraphs = ['The lead paragraph.', 'The second paragraph.']
-  data.about.interests = ['Testing', 'Tooling']
-  data.about.approach = ['Read first.', 'Then build.']
   data.about.photo = undefined
   data.experience.length = 1
 })
 
 describe('AboutSection', () => {
-  it('keeps the section heading and shows the story', () => {
+  it('uses the headline as the section heading', () => {
     render(<AboutSection />)
 
-    expect(screen.getByRole('heading', { level: 2, name: 'A little about me' })).toBeInTheDocument()
+    const heading = screen.getByRole('heading', { level: 2 })
+    expect(heading).toHaveTextContent('Turning ideas into reality.')
+    expect(screen.getByRole('region', { name: /Turning ideas/ })).toHaveAttribute('id', 'about')
+  })
+
+  it('falls back to a plain heading when no headline is set', () => {
+    data.about.headline = undefined
+    render(<AboutSection />)
+
+    expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent('A little about me')
+  })
+
+  it('shows the name, role, a short description, and the education line', () => {
+    render(<AboutSection />)
+
+    expect(screen.getByText('Ada Lovelace')).toBeInTheDocument()
+    expect(screen.getByText('Test Developer')).toBeInTheDocument()
     expect(screen.getByText('The lead paragraph.')).toBeInTheDocument()
-    expect(screen.getByText('The second paragraph.')).toBeInTheDocument()
+    expect(screen.getByText('BSc Test · Test University')).toBeInTheDocument()
+    expect(screen.queryByText('The second paragraph.')).not.toBeInTheDocument()
   })
 
-  it('shows the profile panel with name, role, education, and university only', () => {
+  it('shows a large portrait when there is a photo', () => {
+    data.about.photo = { src: '/images/profile.jpeg', alt: 'Ada portrait' }
     render(<AboutSection />)
 
-    const panel = within(screen.getByRole('heading', { level: 3, name: 'Profile' }).closest('div')!.parentElement!)
-    expect(panel.getByText('Ada Lovelace')).toBeInTheDocument()
-    expect(panel.getByText('Test Developer')).toBeInTheDocument()
-    expect(panel.getByText('BSc Test')).toBeInTheDocument()
-    expect(panel.getByText('Test University')).toBeInTheDocument()
-    expect(panel.getByText('Education')).toBeInTheDocument()
-    expect(panel.getByText('University')).toBeInTheDocument()
-    expect(panel.queryByText('Status')).not.toBeInTheDocument()
-    expect(panel.queryByText('Graduate')).not.toBeInTheDocument()
+    expect(screen.getByRole('img', { name: 'Ada portrait' })).toHaveAttribute(
+      'src',
+      '/images/profile.jpeg',
+    )
   })
 
-  it('shows a photo only when one is provided', () => {
-    const { unmount } = render(<AboutSection />)
+  it('shows no photo when none is set', () => {
+    render(<AboutSection />)
+
     expect(screen.queryByRole('img')).not.toBeInTheDocument()
-    unmount()
-
-    data.about.photo = { src: '/me.png', alt: 'A portrait' }
-    render(<AboutSection />)
-    expect(screen.getByRole('img', { name: 'A portrait' })).toHaveAttribute('src', '/me.png')
   })
 
-    it('builds the career path from education, experience, and career', () => {
+  it('has no profile card and no statistics', () => {
+    const { container } = render(<AboutSection />)
+
+    expect(screen.queryByRole('heading', { level: 3, name: 'Profile' })).not.toBeInTheDocument()
+    expect(container).not.toHaveTextContent(/\d+\+/)
+  })
+
+  it('keeps the career path timeline under the introduction', () => {
     render(<AboutSection />)
 
     const path = screen.getByRole('heading', { level: 3, name: 'Career Path' }).parentElement!
     expect(within(path).getAllByRole('listitem')).toHaveLength(3)
-    expect(within(path).getByText('Internship')).toBeInTheDocument()
     expect(within(path).getByText('Test Corp')).toBeInTheDocument()
-    expect(within(path).getByText('Career')).toBeInTheDocument()
   })
 
-    it('no longer shows the interests or learning approach panels', () => {
+  it('does not show the interests or learning approach', () => {
     render(<AboutSection />)
 
-    expect(screen.queryByRole('heading', { level: 3, name: 'Interests' })).not.toBeInTheDocument()
-    expect(
-      screen.queryByRole('heading', { level: 3, name: 'How I approach learning' }),
-    ).not.toBeInTheDocument()
-  })
-
-  it('copes with a single paragraph', () => {
-    data.about.paragraphs = ['Only one paragraph.']
-    render(<AboutSection />)
-
-    expect(screen.getByText('Only one paragraph.')).toBeInTheDocument()
+    expect(screen.queryByText('Interests')).not.toBeInTheDocument()
+    expect(screen.queryByText('How I approach learning')).not.toBeInTheDocument()
   })
 })

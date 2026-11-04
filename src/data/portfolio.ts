@@ -34,8 +34,9 @@ export const hero: HeroContent = {
 }
 
 export const about: AboutContent = {
+  headline: ['Turning ideas', 'into reality.'],
   paragraphs: [
-    'Information Technology graduate focused on fullstack and backend web development.',
+    'Im an Information Technology graduate from Telkom University with an interest in building web applications and backend systems. I enjoy turning ideas into practical digital solutions, exploring new technologies, and developing applications that are functional, reliable, and user friendly.',
   ],
   education: {
     degree: "Bachelor's Degree in Information Technology",
@@ -55,66 +56,81 @@ export const about: AboutContent = {
     'Read documentation and error messages carefully before changing code.',
   ],
   photo: {
-    src: '/images/Pas Foto 4x6.jpeg',
-    alt: 'A photo of Dicky Latare Tricaesar Sinabang',
+    src: '/images/Pas Foto.webp',
+    alt: 'Dicky Latare Tricaesar Sinabang',
   },
 }
 
-/**
- * Skills. Keep only what you have really used or are really learning, and be
- * ready to talk about each one in an interview.
- *   status: 'used'     -> you have worked with it
- *   status: 'learning' -> you are currently studying it
- * Categories with no skills are hidden automatically.
- */
 export const skillCategories: SkillCategory[] = [
   {
     id: 'frontend',
     title: 'Frontend Development',
-    skills: [{ name: 'React', status: 'used' }],
+    label: 'Interface',
+    description: 'Building responsive, component driven web interfaces with a focus on usability and seamless user experiences.',
+    skills: [
+      { name: 'React', status: 'used' },
+      { name: 'JavaScript', status: 'used' },
+      { name: 'TypeScript', status: 'used' },
+      { name: 'Tailwind', status: 'used' },
+      { name: 'Vite', status: 'used' },
+      { name: 'Three.js', status: 'used' },
+      { name: 'React Router', status: 'used' },
+    ],
   },
   {
     id: 'backend',
     title: 'Backend Development',
+    label: 'Server side',
+    description: 'Developing server-side applications, REST APIs, and application logic.',
     skills: [
       { name: 'Laravel', status: 'used' },
-      { name: 'REST API development', status: 'used' },
-    ],
-  },
-  {
-    id: 'languages',
-    title: 'Programming Languages',
-    skills: [
       { name: 'PHP', status: 'used' },
-      { name: 'JavaScript', status: 'used' },
-      { name: 'TypeScript', status: 'used' },
       { name: 'Python', status: 'used' },
+      { name: 'REST API development', status: 'used' },
+      { name: 'Go', status: 'used' },
     ],
   },
   {
-    id: 'database',
-    title: 'Database',
-    skills: [{ name: 'MySQL', status: 'used' }],
+    id: 'database-tools',
+    title: 'Database & Development Tools',
+    label: 'Data & Tools',
+    description: 'Managing relational databases and streamlining development workflows.',
+    skills: [
+      { name: 'MySQL', status: 'used' },
+      { name: 'Git', status: 'used' },
+      { name: 'GitHub', status: 'used' },
+    ],
   },
   {
     id: 'mobile',
-    title: 'Mobile Development',
-    skills: [{ name: 'Flutter', status: 'used' }],
-  },
-  {
-    id: 'iot-ml',
-    title: 'IoT and Machine Learning',
+    title: 'Mobile Application Development',
+    label: 'Cross-platform',
+    description: 'Building mobile applications with Flutter.',
     skills: [
-      { name: 'IoT sensor integration', status: 'used' },
-      { name: 'Machine learning (basics)', status: 'learning' },
+      { name: 'Flutter', status: 'used' },
+      { name: 'Dart', status: 'used' },
     ],
   },
   {
-    id: 'tools',
-    title: 'Development Tools',
+    id: 'iot',
+    title: 'IoT Development',
+    label: 'Embedded Systems',
+    description: 'Integrating embedded devices and sensors with software monitoring systems.',
     skills: [
-      { name: 'Git', status: 'used' },
-      { name: 'GitHub', status: 'used' },
+      { name: 'IoT Sensors', status: 'used' },
+      { name: 'Arduino IDE', status: 'used' },
+      { name: 'C++', status: 'learning' },
+    ],
+  },
+  {
+    id: 'machine-learning',
+    title: 'Machine Learning',
+    label: 'Applied Inteligence',
+    description: 'Learning the fundamentals of machine learning.',
+    skills: [
+      { name: 'TensorFlow', status: 'used' },
+      { name: 'LSTM', status: 'learning' },
+      { name: 'Google Colab', status: 'used' },
     ],
   },
 ]

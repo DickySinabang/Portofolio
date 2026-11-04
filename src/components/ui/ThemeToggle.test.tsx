@@ -31,6 +31,15 @@ describe('ThemeToggle', () => {
       </>,
     )
 
+  it('lets colours glide while the theme changes', async () => {
+    const user = userEvent.setup()
+    render(<ThemeToggle />)
+
+    await user.click(screen.getByRole('button', { name: 'Switch to light theme' }))
+
+    expect(document.documentElement).toHaveClass('theme-transition')
+  })
+
     await user.click(screen.getAllByRole('button')[0])
     expect(screen.getAllByRole('button', { name: 'Switch to dark theme' })).toHaveLength(2)
   })
