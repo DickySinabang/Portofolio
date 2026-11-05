@@ -15,6 +15,7 @@ import {
   SphereGeometry,
   Texture,
   TextureLoader,
+  Vector2,
   Vector3,
   WebGLRenderer,
 } from 'three'
@@ -33,17 +34,6 @@ import {
 import { ORBITS } from '../../lib/planet'
 import { subscribeScroll } from '../../lib/scrollBus'
 
-/*
- * The Earth, one persistent WebGL scene behind the whole page.
- *
- * The planet is drawn from real NASA imagery (public/textures/earth): the daytime surface,
- * the city lights of the night side, an ocean mask for the sun's glitter, and cloud cover.
- * Shaders add the lighting, the glow of the atmosphere and the soft blush where day turns
- * to night. The scroll position is turned into a position along the camera journey
- * (lib/earthJourney.ts): the camera orbits and retreats, the Earth turns and shrinks, and the
- * light shifts. This file is loaded lazily, so Three.js is never part of the initial bundle.
- */
-
 /** An average gap between frames above this (ms), about 15 fps, means no real GPU. */
 const SLOW_FRAME_MS = 65
 /** One frame gap this long (ms), after the first few, means the scene is unusable here. */
@@ -52,6 +42,8 @@ const SOFTWARE_RENDERER = /swiftshader|llvmpipe|softpipe|software|basic render/i
 const IDLE_FRAME_MS = 1000 / 30 // when the page is not scrolling, 30 fps is plenty
 /** Which longitude faces the camera at the start: Southeast Asia, near the visitor's home. */
 const BASE_SPIN = -3.3
+const GLOW_RADIUS = 1.05
+const GLOW_DEPTH_MAX = Math.sqrt(1 - 1 / (GLOW_RADIUS * GLOW_RADIUS))
 
 const noiseGlsl = /* glsl */ `
   float hash(vec3 p) {
@@ -102,6 +94,7 @@ const earthFragment = /* glsl */ `
   uniform sampler2D uDay;
   uniform sampler2D uLights;
   uniform sampler2D uWater;
+  uniform vec2 uDayTexel; // the size of one pixel of the day picture
   uniform vec3 uLight;
   uniform float uGlow;
   varying vec2 vUv;
@@ -112,16 +105,27 @@ const earthFragment = /* glsl */ `
 
   void main() {
     vec3 p = normalize(vObj);
-    vec3 day = texture2D(uDay, vUv).rgb;
+
+    // The picture is magnified a lot in the intro, so lift its edges a little (an unsharp
+    // mask): coastlines, deserts and mountains stay crisp instead of going soft.
+    vec3 dayRaw = texture2D(uDay, vUv).rgb;
+    vec2 dx = vec2(uDayTexel.x * 1.4, 0.0);
+    vec2 dy = vec2(0.0, uDayTexel.y * 1.4);
+    vec3 around = 0.25 * (
+      texture2D(uDay, vUv + dx).rgb + texture2D(uDay, vUv - dx).rgb +
+      texture2D(uDay, vUv + dy).rgb + texture2D(uDay, vUv - dy).rgb
+    );
+    vec3 day = clamp(dayRaw + (dayRaw - around) * 0.85, 0.0, 1.0);
+
     float water = texture2D(uWater, vUv).r; // 1 over the ocean, 0 over land
     vec3 lights = texture2D(uLights, vUv).rgb;
 
-    // Grade the picture: deep, moody oceans with a little life in them; land a touch darker
-    // and richer, so the clouds and the glow stand out against it.
-    float swell = fbm(p * 5.0);
-    vec3 deepOcean = vec3(0.01, 0.06, 0.22);
-    vec3 brightOcean = vec3(0.05, 0.3, 0.6);
-    vec3 ocean = mix(deepOcean, brightOcean, 0.25 + 0.75 * smoothstep(0.25, 0.75, swell));
+    // Deep, calm oceans. The variation is fine-grained and gentle, so it reads as water and
+    // never as haze; land keeps the real picture, a touch richer.
+    float swell = fbm(p * 16.0);
+    vec3 deepOcean = vec3(0.008, 0.05, 0.2);
+    vec3 brightOcean = vec3(0.035, 0.22, 0.5);
+    vec3 ocean = mix(deepOcean, brightOcean, 0.3 + 0.5 * smoothstep(0.3, 0.7, swell));
     vec3 land = pow(day, vec3(1.15)) * vec3(0.95, 0.98, 1.0);
     float oceanMask = smoothstep(0.35, 0.65, water);
     vec3 color = mix(land, ocean, oceanMask);
@@ -147,9 +151,20 @@ const earthFragment = /* glsl */ `
     float terminator = smoothstep(-0.2, 0.03, ndl) * (1.0 - smoothstep(0.03, 0.4, ndl));
     lit += vec3(0.35, 0.3, 0.85) * terminator * 0.2;
 
-    // Blue-cyan atmosphere hugging the edge of the disc, strongest toward the sun.
-    float fresnel = pow(1.0 - max(dot(N, V), 0.0), 2.6);
-    lit += vec3(0.25, 0.62, 1.0) * fresnel * (0.2 + 0.8 * smoothstep(-0.3, 0.5, ndl)) * 1.1 * uGlow;
+    // ---- Atmospheric lighting, seen from the edge of the disc inward ----
+    // NdV is 1 facing the camera and 0 exactly at the edge. The rim is a little stronger on
+    // the sunlit side, but it runs all the way round the curve.
+    float NdV = max(dot(N, V), 0.0);
+    float sun = 0.55 + 0.45 * smoothstep(-0.4, 0.45, ndl);
+    float toEdge = 1.0 - NdV;
+
+    // 1. Ambient: a faint blue reflection on the surface near the horizon.
+    lit += vec3(0.06, 0.22, 0.55) * pow(toEdge, 3.0) * (0.3 + 0.7 * smoothstep(-0.2, 0.5, ndl)) * 0.45;
+    // 2. Inner rim: a narrow band of electric blue right at the edge...
+    lit += vec3(0.1, 0.42, 1.0) * pow(toEdge, 7.0) * sun * 0.9 * uGlow;
+    // 3. ...and on its very edge a thin, sharp line of cyan.
+    float hairline = pow(1.0 - smoothstep(0.0, 0.1, NdV), 1.4);
+    lit += vec3(0.45, 0.88, 1.0) * hairline * sun * 1.5 * uGlow;
 
     gl_FragColor = vec4(lit, 1.0);
   }
@@ -171,42 +186,56 @@ const cloudFragment = /* glsl */ `
     float cover = texture2D(uClouds, vUv).r;
     // Break the cloud deck up a little at close range, and let it drift.
     float detail = fbm(p * 9.0 + vec3(uTime * 0.01, 0.0, 0.0));
-    float density = smoothstep(0.12, 0.85, cover) * (0.7 + 0.5 * detail);
+    float density = smoothstep(0.22, 0.88, cover) * (0.75 + 0.4 * detail);
 
     vec3 N = normalize(vWorldNormal);
     float ndl = dot(N, normalize(uLight));
+    // Fade the clouds out at the very edge of the disc, so the planet's outline stays clean.
+    float NdV = max(dot(N, normalize(cameraPosition - vWorldPos)), 0.0);
+    float edgeFade = smoothstep(0.02, 0.2, NdV);
     float lit = smoothstep(-0.12, 0.75, ndl);
 
     vec3 color = vec3(0.95, 0.97, 1.0) * (0.03 + 1.15 * lit);
     color += vec3(0.4, 0.35, 0.8) * smoothstep(-0.2, 0.0, ndl) * (1.0 - smoothstep(0.0, 0.3, ndl)) * 0.15;
-    float alpha = clamp(density, 0.0, 1.0) * (0.12 + 0.8 * lit);
+    float alpha = clamp(density, 0.0, 1.0) * (0.12 + 0.75 * lit) * edgeFade;
     gl_FragColor = vec4(color, alpha);
   }
 `
 
 const glowVertex = /* glsl */ `
-  varying vec3 vViewNormal;
   varying vec3 vWorldNormal;
+  varying vec3 vWorldPos;
   void main() {
-    vViewNormal = normalize(normalMatrix * normal);
     vWorldNormal = normalize(mat3(modelMatrix) * normal);
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+    vec4 world = modelMatrix * vec4(position, 1.0);
+    vWorldPos = world.xyz;
+    gl_Position = projectionMatrix * viewMatrix * world;
   }
 `
 
 // A slightly larger sphere seen from the inside (BackSide): the scattered light around the
-// planet. Its alpha fades to zero at its own silhouette, so it has no hard edge.
+// planet. "t" is 1 exactly at the planet's edge and 0 at the shell's own edge, so the light
+// is brightest along the curve and falls away quickly, with a faint wider bloom. It follows
+// the planet's outline wherever the camera is, because it is measured along each view ray.
 const glowFragment = /* glsl */ `
   precision highp float;
   uniform vec3 uLight;
   uniform float uGlow;
-  varying vec3 vViewNormal;
   varying vec3 vWorldNormal;
+  varying vec3 vWorldPos;
   void main() {
-    float depth = max(-vViewNormal.z, 0.0);
-    float lit = 0.3 + 0.7 * smoothstep(-0.5, 0.6, dot(normalize(vWorldNormal), normalize(uLight)));
-    float alpha = clamp(pow(depth, 1.35) * 2.6 * lit * uGlow, 0.0, 1.0);
-    vec3 color = mix(vec3(0.16, 0.45, 1.0), vec3(0.4, 0.82, 1.0), pow(depth, 0.8));
+    vec3 N = normalize(vWorldNormal);
+    vec3 D = normalize(vWorldPos - cameraPosition);
+    float depth = max(dot(N, D), 0.0);
+    float t = clamp(depth / ${GLOW_DEPTH_MAX.toFixed(5)}, 0.0, 1.0);
+
+    float sun = 0.6 + 0.4 * smoothstep(-0.5, 0.6, dot(N, normalize(uLight)));
+    float tight = pow(t, 6.0) * 0.85; // the sharp skin of light along the edge
+    float bloom = pow(t, 2.5) * 0.05; // a very faint, soft halo
+    float alpha = clamp((tight + bloom) * sun * uGlow, 0.0, 1.0);
+
+    // Cyan at the edge, deepening to electric blue further out.
+    vec3 color = mix(vec3(0.1, 0.38, 1.0), vec3(0.4, 0.86, 1.0), pow(t, 1.6));
     gl_FragColor = vec4(color, alpha);
   }
 `
@@ -326,7 +355,13 @@ export default function EarthScene({ onReady, onFail }: EarthSceneProps) {
         track(new SphereGeometry(1, 160, 120)),
         track(
           new ShaderMaterial({
-            uniforms: { ...shared, uDay: { value: day }, uLights: { value: lights }, uWater: { value: water } },
+            uniforms: {
+              ...shared,
+              uDay: { value: day },
+              uLights: { value: lights },
+              uWater: { value: water },
+              uDayTexel: { value: new Vector2(1 / day.image.width, 1 / day.image.height) },
+            },
             vertexShader: surfaceVertex,
             fragmentShader: earthFragment,
           }),
@@ -335,7 +370,7 @@ export default function EarthScene({ onReady, onFail }: EarthSceneProps) {
       tilt.add(earth)
 
       const cloudLayer = new Mesh(
-        track(new SphereGeometry(1.008, 128, 96)),
+        track(new SphereGeometry(1.004, 128, 96)),
         track(
           new ShaderMaterial({
             uniforms: { ...shared, uClouds: { value: clouds } },
@@ -349,7 +384,7 @@ export default function EarthScene({ onReady, onFail }: EarthSceneProps) {
       tilt.add(cloudLayer)
 
       const atmosphere = new Mesh(
-        track(new SphereGeometry(1.1, 96, 64)),
+        track(new SphereGeometry(GLOW_RADIUS, 96, 64)),
         track(
           new ShaderMaterial({
             uniforms: shared,
@@ -425,8 +460,8 @@ export default function EarthScene({ onReady, onFail }: EarthSceneProps) {
         width = host!.clientWidth
         height = host!.clientHeight
         if (!width || !height) return
-        const maxRatio = width < 640 ? 1.5 : 1.75
-        const budget = Math.sqrt(2.4e6 / (width * height)) // keep the pixel count in check on big screens
+        const maxRatio = width < 640 ? 1.5 : 2
+        const budget = Math.sqrt(3.2e6 / (width * height))
         renderer.setPixelRatio(Math.max(0.75, Math.min(window.devicePixelRatio || 1, maxRatio, budget)))
         renderer.setSize(width, height, false)
         camera.aspect = width / height
